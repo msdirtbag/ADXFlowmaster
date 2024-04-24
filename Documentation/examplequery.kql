@@ -1,0 +1,9 @@
+let ThreatIPs = ThreatIntelligenceIndicator
+| project NetworkSourceIP;
+FlowLogs
+| mv-expand flattenedIPs
+| join kind=inner ThreatIPs on $left.flattenedIPs == $right.NetworkSourceIP
+| union (
+    DeviceNetworkEvents
+    | join kind=inner ThreatIPs on $left.RemoteIP == $right.NetworkSourceIP
+)
