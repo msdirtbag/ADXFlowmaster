@@ -51,6 +51,8 @@ This project deploys the following Azure resource types:
 
    ## Example:
 
+   ![Deploy](./Images/deployment.png)
+
    location = 'eastus'
 
    vnetspace = '192.168.0.0/26'
