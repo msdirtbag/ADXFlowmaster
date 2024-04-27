@@ -28,7 +28,7 @@ In addition to existing support to identify traffic that network security group 
 
 ## What are Defender for Endpoint DeviceNetworkEvents streaming logs?
 
-The DeviceNetworkEvents table in the advanced hunting schema contains information about network connections and related events. For MDE-enrolled Servers & Workstations, it is important communication data that includse a subset of Zeek events. By combining this data with VNET Flow Logs from Azure Virtual Networks, you have (1) place to Threat Hunt malicious traffic regardless of the traditional networking vendors in use. 
+The DeviceNetworkEvents table in the advanced hunting schema contains information about network connections and related events. For MDE-enrolled Servers & Workstations, it is important communication data that includes a subset of Zeek events. By combining this data with VNET Flow Logs from Azure Virtual Networks, you have (1) place to Threat Hunt malicious traffic regardless of the traditional networking vendors in use. 
 
 ## Overview
 
@@ -62,6 +62,10 @@ This project deploys the following Azure resource types:
 🔻 [Configure](https://learn.microsoft.com/en-us/defender-endpoint/api/raw-data-export-storage) Microsoft Defender for Endpoint to stream DeviceNetworkEvents to ADXFlowmaster's Storage Account.
 
 🔻 Go Hunt! Start by searching "ADXFlowmasterleads" in ADX.
+
+## Acknowledgements:
+
+ This community tool was made possible by the BlueVoyant Digital Forensics & Incident Respose team. Need some help? Hit us up at incident@bluevoyant.com
 
 
 ## Deployment Guides:
