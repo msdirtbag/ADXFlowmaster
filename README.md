@@ -28,7 +28,7 @@ In addition to existing support to identify traffic that network security group 
 
 ## What are Defender for Endpoint DeviceNetworkEvents streaming logs?
 
-The DeviceNetworkEvents table in the advanced hunting schema contains information about network connections and related events. For MDE-enrolled Servers & Workstations, it is important communication data that includse a subset of Zeek events. By combining this data with VNET Flow Logs from Azure Virtual Networks, you have (1) place to Threat Hunt malicious traffic regardless of the the traditional networking vendors in use. 
+The DeviceNetworkEvents table in the advanced hunting schema contains information about network connections and related events. For MDE-enrolled Servers & Workstations, it is important communication data that includse a subset of Zeek events. By combining this data with VNET Flow Logs from Azure Virtual Networks, you have (1) place to Threat Hunt malicious traffic regardless of the traditional networking vendors in use. 
 
 ## Overview
 
