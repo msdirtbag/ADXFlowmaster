@@ -2,7 +2,7 @@
 
 This project deploys a Threat Hunting solution named ADXFlowmaster. This event-driven system ingests Azure VNET Flow Logs, Defender for Endpoint DeviceNetworkEvents Logs, and Microsoft Sentinel ThreatIntelligenceIndicators for analysis in Azure Data Explorer.
 
-(./Images/ADXFlowmaster.png)
+![Deploy](./Images/ADXFlowmaster.png)
 
 ## What are VNET Flow logs?
 
@@ -66,7 +66,7 @@ This project deploys the following Azure resource types:
 
 ## Configure Log Ingest:
 
-🔻 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmsdirtbag%2FDevBoxQuickStart%2Fmain%2Fmain.json) the ADXFlowmaster Azure Policy to (1) Virtual Network or all of them!
+🔻 [Configure](https://www.azadvertizer.net/azpolicyadvertizer/3e9965dc-cc13-47ca-8259-a4252fd0cf7b.html) VNET Flow Logs via Azure Policy to (1) Virtual Network or all of them! (Network Traffic Analytics is not required)
 
 🔻 [Configure](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/logs-data-export?tabs=portal#create-or-update-a-data-export-rule) the Log Analytics Data Export Rule to ADXFlowmaster's Storage Account for the ThreatIntelligenceIndicator Table in the Sentinel-enabled Log Analytics Workspace. 
 
