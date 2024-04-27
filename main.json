@@ -8,9 +8,6 @@
     "adxsgid": {
       "type": "string"
     },
-    "location": {
-      "type": "string"
-    },
     "vnetspace": {
       "type": "string"
     },
@@ -19,7 +16,8 @@
     }
   },
   "variables": {
-    "environmentid": "[uniqueString(subscription().id, tenant().tenantId, parameters('env'))]"
+    "environmentid": "[uniqueString(subscription().id, tenant().tenantId, parameters('env'))]",
+    "location": "[deployment().location]"
   },
   "resources": [
     {
@@ -37,7 +35,7 @@
             "value": "[parameters('env')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           }
         },
         "template": {
@@ -90,7 +88,7 @@
             "value": "[variables('environmentid')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           }
         },
         "template": {
@@ -250,7 +248,7 @@
         "mode": "Incremental",
         "parameters": {
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "umirid": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.umirid.value]"
@@ -338,7 +336,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.laworkspacerid.value]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "vnetspace": {
             "value": "[parameters('vnetspace')]"
@@ -477,7 +475,7 @@
             "value": "[variables('environmentid')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "larid": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.laworkspacerid.value]"
@@ -630,7 +628,7 @@
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.laworkspacerid.value]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "snetmainid": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.mainsubnetresourceid.value]"
