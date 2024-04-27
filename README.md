@@ -38,7 +38,7 @@ This project deploys the following Azure resource types:
 - Azure Event Grid
 - Azure Event Hub
 - Azure Storage
-- Log Analytics Workspace
+- Log Analytics Workspace (internal)
 - User Managed Identity
 
 ## Deployment
