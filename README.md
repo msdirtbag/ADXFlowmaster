@@ -26,7 +26,7 @@ Virtual network flow logs also avoid the need to enable multiple-level flow logg
 
 In addition to existing support to identify traffic that network security group rules allow or deny, Virtual network flow logs support identification of traffic that Azure Virtual Network Manager security admin rules allow or deny. Virtual network flow logs also support evaluating the encryption status of your network traffic in scenarios where you're using virtual network encryption
 
-(./Images/vnetflowlogs.png)
+![VNET Flow Logs](./Images/vnetflowlogs.png)
 
 ## What are Defender for Endpoint DeviceNetworkEvents streaming logs?
 
@@ -47,7 +47,7 @@ This project deploys the following Azure resource types:
 
 1. Hit the blue "Deploy" button below.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmsdirtbag%2FDevBoxQuickStart%2Fmain%2Fmain.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fmsdirtbag%2FADXFlowmaster%2Fmain%2Fmain.json)
 
 2. Specify your settings. 
 
