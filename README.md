@@ -47,7 +47,7 @@ This project deploys the following Azure resource types:
 
 1. Hit the blue "Deploy" button below.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fmsdirtbag%2FADXFlowmaster%2Fmain%2Fmain.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmsdirtbag%2FADXFlowmaster%2Fmain%2Fmain.json)
 
 2. Specify your settings. 
 
