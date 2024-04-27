@@ -53,15 +53,6 @@ This project deploys the following Azure resource types:
 
    ![Deploy](./Images/deployment.png)
 
-   vnetspace = '192.168.0.0/26'
-
-   mainsnetspace = '192.168.0.0/26'
-
-   adxsgid = 'the entra id client id of the security group for ADXFlowmaster'
-   
-   env = 'hunt'
-
-
 ## Configure Log Ingest:
 
 🔻 [Configure](https://www.azadvertizer.net/azpolicyadvertizer/3e9965dc-cc13-47ca-8259-a4252fd0cf7b.html) VNET Flow Logs via Azure Policy to (1) Virtual Network or all of them! (Network Traffic Analytics is not required)
