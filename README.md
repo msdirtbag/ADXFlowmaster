@@ -6,8 +6,6 @@ This project deploys a Threat Hunting solution named ADXFlowmaster. This event-d
 
 ## What are VNET Flow logs?
 
-Microsoft:
-
 Flow logs are the source of truth for all network activity in Azure Virtual Networks.
 
 Key properties of virtual network flow logs include:
