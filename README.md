@@ -65,7 +65,7 @@ This project deploys the following Azure resource types:
 
 ## Acknowledgements:
 
- This community tool was made possible by the BlueVoyant Digital Forensics & Incident Respose team. Need some help? Hit us up at incident@bluevoyant.com
+ This community tool was made possible by the BlueVoyant Digital Forensics & Incident Response team. Need some help? Hit us up at incident@bluevoyant.com
 
 
 ## Deployment Guides:
