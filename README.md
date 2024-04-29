@@ -1,4 +1,4 @@
-# ADXFlowmaster 0.2.4 Alpha
+# ADXFlowmaster 0.2.4
 
 This project deploys a Threat Hunting solution named ADXFlowmaster. This event-driven system ingests Azure VNET Flow Logs, Defender for Endpoint DeviceNetworkEvents Logs, and Microsoft Sentinel ThreatIntelligenceIndicators for analysis in Azure Data Explorer.
 
