@@ -39,6 +39,7 @@ FlowLogTransform()  {
           TrafficDirection = tostring(tupleParts[6]),
           BytesSrcToDest = toint(tupleParts[10]),
           BytesDestToSrc = toint(tupleParts[12])
+    | where isnotempty(SrcIp) and isnotempty(DestIp) and isnotnull(DestPort) // Filter out null records
     | project TimeGenerated, SrcIp, DestIp, DestPort, TrafficDirection, BytesDestToSrc, BytesSrcToDest
 }
 
@@ -66,7 +67,7 @@ FlowLogTransform()  {
 // 11. Create function command
 ////////////////////////////////////////////////////////////
 .create-or-alter function 
-with (docstring = 'Searches network logs for IOCs', folder='FlowLogs')
+with (docstring = 'Searches network logs for Sentinel IOCs', folder='FlowLogs')
 ADXFlowmasterleads()  {
     let ThreatIPs = ThreatIntelligenceIndicator
 | where isnotempty(NetworkSourceIP) // Filter out null NetworkSourceIPs
@@ -83,4 +84,24 @@ FlowLogFlowEvent
     | where isnotempty(IPMatch) // Filter out null IPMatch values in DeviceNetworkEvents
     | join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP
 )
+}
+
+// 12. Create function command
+////////////////////////////////////////////////////////////
+.create-or-alter function 
+with (docstring = 'Searches network logs for opensource IOCs', folder='FlowLogs')
+ADXFlowmasterleadsOS()  {
+    let BlockList = (externaldata(ip:string)
+[@"https://rules.emergingthreats.net/blockrules/compromised-ips.txt",
+@"https://raw.githubusercontent.com/stamparm/ipsum/master/levels/5.txt",
+@"https://cinsscore.com/list/ci-badguys.txt",
+@"https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt"
+]
+with(format="csv")
+| where ip matches regex "(^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)"
+| distinct ip
+);
+DeviceNetworkEvents
+| where RemoteIP  in (BlockList)
+| union (FlowLogFlowEvent| where SrcIp in (BlockList) or  DestIp in (BlockList))
 }
