@@ -69,15 +69,18 @@ FlowLogTransform()  {
 with (docstring = 'Searches network logs for IOCs', folder='FlowLogs')
 ADXFlowmasterleads()  {
     let ThreatIPs = ThreatIntelligenceIndicator
+| where isnotempty(NetworkSourceIP) // Filter out null NetworkSourceIPs
 | project NetworkSourceIP;
 FlowLogFlowEvent
 | extend IPMatch = pack_array(SrcIp, DestIp)
 | mv-expand IPMatch to typeof(string)
+| where isnotempty(IPMatch) // Filter out null IPMatch values
 | join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP
 | union (
     DeviceNetworkEvents
     | extend IPMatch = pack_array(RemoteIP)
     | mv-expand IPMatch to typeof(string)
+    | where isnotempty(IPMatch) // Filter out null IPMatch values in DeviceNetworkEvents
     | join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP
 )
 }
