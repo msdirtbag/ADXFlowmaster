@@ -66,7 +66,7 @@ The Add-Ons:
 
 UALSearch- On-demand search tool that uses PowerShell 7 Parallel to rapidly ingest UAL logs into Azure Data Explorer. Offers Date range, Operations, UserId, and IP filters. (Terrible front-end example included in the Parts folder but you can do better)
 
-![UALSearch](./Images/ualsearch.png)
+![UALSearch](./Images/UALSearch.png)
 
 UALMaster- This customizable Azure Function uses a highly adaptive & fault-tolerant method to continuiously export UAL Logs (selected Operation types) from M365 tenants. 
 
