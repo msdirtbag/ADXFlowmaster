@@ -4,6 +4,7 @@
 targetScope = 'resourceGroup'
 
 //Variables
+var tenantid = subscription().tenantId
 
 //Parameters
 param umirid string
@@ -22,9 +23,9 @@ resource kustocluster 'Microsoft.Kusto/clusters@2023-08-15' = {
   name: 'adxfm${environmentid}'
   location: location
   sku: {
-    capacity: 2
-    name: 'Standard_E4ads_v5'
-    tier: 'Standard'
+    capacity: 1
+    name: 'Dev(No SLA)_Standard_E2a_v4'
+    tier: 'Basic'
   }
   identity: {
     type: 'UserAssigned'
@@ -68,9 +69,9 @@ resource sgroleassign 'Microsoft.Kusto/clusters/principalAssignments@2023-08-15'
   }
 }
 
-//This deploys the ADXFlowmaster ADX Database.
+//This deploys the Database.
 resource flowdatabase 'Microsoft.Kusto/clusters/databases@2023-08-15' = {
-  name: 'ADXFlowmaster'
+  name: 'logs'
   parent: kustocluster
   location: location
   kind: 'ReadWrite'
@@ -124,7 +125,7 @@ resource kustoclusterpe 'Microsoft.Network/privateEndpoints@2023-04-01' = {
 }
 
 //This deploys the DNS Zone Link.
-resource dnsadx 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+resource dnsadx 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name: 'privatelink.${location}.kusto.windows.net'
   location: 'global'
   dependsOn: [
@@ -133,7 +134,7 @@ resource dnsadx 'Microsoft.Network/privateDnsZones@2020-06-01' = {
 }
 
 //This deploys the DNS Virtual Network Link.
-resource dnsvnetlinkadx 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+resource dnsvnetlinkadx 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
   parent: dnsadx
   name: 'adx-${environmentid}'
   location: 'global'
@@ -161,7 +162,7 @@ resource kustozonegroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups
   }
 }
 
-//This deploys the Storage Account.
+// This deploys the Storage Account.
 resource storage01 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: 'stadx${environmentid}'
   location: location
@@ -176,6 +177,7 @@ resource storage01 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: 'Standard_LRS'
   }
   properties: {
+    isLocalUserEnabled: false
     encryption: {
       keySource: 'Microsoft.Storage'
       requireInfrastructureEncryption: true
@@ -195,10 +197,6 @@ resource storage01 'Microsoft.Storage/storageAccounts@2023-01-01' = {
           keyType: 'Service'
         }
       }
-    }
-    networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Allow'
     }
     allowBlobPublicAccess: false
     supportsHttpsTrafficOnly: true
@@ -235,7 +233,7 @@ resource archivevrule 'Microsoft.Storage/storageAccounts/managementPolicies@2023
         }
         {
           enabled: true
-          name: 'DeleteAfter24Months'
+          name: 'DeleteAfter12Months'
           type: 'Lifecycle'
           definition: {
             actions: {
@@ -273,10 +271,19 @@ resource storage01diag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview
 }
 
 //This deploys the Blob Service.
-resource adxblobserv 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+resource adxblobserv 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
   name: 'default'
   parent: storage01
   properties: {
+  }
+}
+
+//This deploys the UAL Container.
+resource ualcontainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
+  name: 'ual'
+  parent: adxblobserv
+  properties: {
+    publicAccess: 'None'
   }
 }
 
@@ -318,7 +325,7 @@ resource adxblob01pe 'Microsoft.Network/privateEndpoints@2023-04-01' = {
 }
 
 //This deploys the DNS Zone.
-resource dnsblob 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+resource dnsblob 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name: 'privatelink.blob.core.windows.net'
   location: 'global'
 }
@@ -390,7 +397,7 @@ resource flowmasterscript 'Microsoft.Kusto/clusters/databases/scripts@2023-08-15
 }
 
 //This deploys the Event Hub Namespace.
-resource adxeventhubnamespace 'Microsoft.EventHub/namespaces@2023-01-01-preview' = {
+resource adxeventhubnamespace 'Microsoft.EventHub/namespaces@2024-05-01-preview' = {
   name: 'evhns-flowmaster-${environmentid}'
   location: location
   sku: {
@@ -414,7 +421,7 @@ resource adxeventhubnamespace 'Microsoft.EventHub/namespaces@2023-01-01-preview'
 }
 
 //The Flow Logs Event Hub
-resource flowlogshub 'Microsoft.EventHub/namespaces/eventhubs@2023-01-01-preview' = {
+resource flowlogshub 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
   name: 'evh-flowmaster-flowlogs-${environmentid}'
   parent: adxeventhubnamespace
   properties: {
@@ -424,7 +431,7 @@ resource flowlogshub 'Microsoft.EventHub/namespaces/eventhubs@2023-01-01-preview
 }
 
 //The DeviceNetworkEvents Event Hub
-resource devicenetworkhub 'Microsoft.EventHub/namespaces/eventhubs@2023-01-01-preview' = {
+resource devicenetworkhub 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
   name: 'evh-flowmaster-devicenetwork-${environmentid}'
   parent: adxeventhubnamespace
   properties: {
@@ -434,8 +441,28 @@ resource devicenetworkhub 'Microsoft.EventHub/namespaces/eventhubs@2023-01-01-pr
 }
 
 //The ThreatIntelligenceIndicator Event Hub
-resource ctihub 'Microsoft.EventHub/namespaces/eventhubs@2023-01-01-preview' = {
+resource ctihub 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
   name: 'evh-flowmaster-cti-${environmentid}'
+  parent: adxeventhubnamespace
+  properties: {
+    messageRetentionInDays: 1
+    partitionCount: 8
+  }
+}
+
+//The UnifiedAuditLog Event Hub
+resource ualhub 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
+  name: 'evh-flowmaster-ual-${environmentid}'
+  parent: adxeventhubnamespace
+  properties: {
+    messageRetentionInDays: 1
+    partitionCount: 8
+  }
+}
+
+//The Graph Event Hub
+resource graphhub 'Microsoft.EventHub/namespaces/eventhubs@2024-05-01-preview' = {
+  name: 'evh-flowmaster-graph-${environmentid}'
   parent: adxeventhubnamespace
   properties: {
     messageRetentionInDays: 1
@@ -525,6 +552,58 @@ resource ctisubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@20
   }
 }
 
+//The UnifiedAuditLog Subscription
+resource ualsubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@2023-12-15-preview' = {
+  parent: adxblobtopic
+  name: 'evgs-flowmaster-ual-${environmentid}'
+  properties: {
+    deliveryWithResourceIdentity: {
+      destination: {
+        endpointType: 'EventHub'
+        properties: {
+          resourceId: ualhub.id
+        }
+      }
+      identity: {
+        type: 'UserAssigned'
+        userAssignedIdentity: umirid
+      }
+    }
+    filter: {
+      includedEventTypes: [
+        'Microsoft.Storage.BlobCreated'
+      ]
+      subjectBeginsWith: '/blobServices/default/containers/ual/'
+    }
+  }
+}
+
+//The Graph Subscription
+resource graphsubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@2023-12-15-preview' = {
+  parent: adxblobtopic
+  name: 'evgs-flowmaster-graph-${environmentid}'
+  properties: {
+    deliveryWithResourceIdentity: {
+      destination: {
+        endpointType: 'EventHub'
+        properties: {
+          resourceId: graphhub.id
+        }
+      }
+      identity: {
+        type: 'UserAssigned'
+        userAssignedIdentity: umirid
+      }
+    }
+    filter: {
+      includedEventTypes: [
+        'Microsoft.Storage.BlobCreated'
+      ]
+      subjectBeginsWith: '/blobServices/default/containers/insights-logs-microsoftgraphactivitylogs/'
+    }
+  }
+}
+
 //The Device Network Data Connection
 resource devicenetworkdataconnection 'Microsoft.Kusto/clusters/databases/dataConnections@2023-08-15' = {
   name: 'adxdc-fw-devicenetwork-${environmentid}'
@@ -592,6 +671,52 @@ resource flowlogsdataconnection 'Microsoft.Kusto/clusters/databases/dataConnecti
     ]
 }
 
+//The UnifiedAuditLog Data Connection
+resource ualdataconnection 'Microsoft.Kusto/clusters/databases/dataConnections@2023-08-15' = {
+  name: 'adxdc-fw-ual-${environmentid}'
+  location: location
+  parent: flowdatabase
+  kind: 'EventGrid'
+  properties: {
+    blobStorageEventType: 'Microsoft.Storage.BlobCreated'
+    consumerGroup: '$Default'
+    dataFormat: 'JSON'
+    databaseRouting: 'Multi'
+    managedIdentityResourceId: umirid
+    eventGridResourceId: adxblobtopic.id
+    eventHubResourceId: ualhub.id
+    mappingRuleName: 'UnifiedAuditLograw_mapping'
+    storageAccountResourceId: storage01.id
+    tableName: 'UnifiedAuditLograw'
+    }
+    dependsOn: [
+      flowmasterscript
+    ]
+}
+
+//The Graph Data Connection
+resource graphdataconnection 'Microsoft.Kusto/clusters/databases/dataConnections@2023-08-15' = {
+  name: 'adxdc-fw-graph-${environmentid}'
+  location: location
+  parent: flowdatabase
+  kind: 'EventGrid'
+  properties: {
+    blobStorageEventType: 'Microsoft.Storage.BlobCreated'
+    consumerGroup: '$Default'
+    dataFormat: 'JSON'
+    databaseRouting: 'Multi'
+    managedIdentityResourceId: umirid
+    eventGridResourceId: adxblobtopic.id
+    eventHubResourceId: graphhub.id
+    mappingRuleName: 'MicrosoftGraphActivityLogs_mapping'
+    storageAccountResourceId: storage01.id
+    tableName: 'MicrosoftGraphActivityLogs'
+    }
+    dependsOn: [
+      flowmasterscript
+    ]
+}
+
 //Diagnostic settings for Event Hub
 resource adxeventhubdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
   name: 'Monitor-eventhub-adx'
@@ -652,13 +777,13 @@ resource evhnadxzonegroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGrou
 }
 
 //This deploys the DNS Zone Link.
-resource dnsevhn 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+resource dnsevhn 'Microsoft.Network/privateDnsZones@2024-06-01' = {
   name: 'privatelink.servicebus.windows.net'
   location: 'global'
 }
 
 //This deploys the DNS Virtual Network Link.
-resource dnsvnetlink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+resource dnsvnetlink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2024-06-01' = {
   parent: dnsevhn
   name: 'EventHub-${environmentid}'
   location: 'global'
@@ -674,4 +799,5 @@ resource dnsvnetlink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020
 output adxname string = kustocluster.name
 output adxstrid string = storage01.id
 output adxeventgridname string = adxblobtopic.name
-output adxstcs string = 'DefaultEndpointsProtocol=https;AccountName=${storage01.name};AccountKey=${listKeys(storage01.id, storage01.apiVersion).keys[0].value}'
+output adxingesturl string = kustocluster.properties.dataIngestionUri
+output adxstname string = storage01.name

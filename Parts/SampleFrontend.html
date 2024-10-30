@@ -1,0 +1,192 @@
+<!-- wp:html -->
+<div class="ualsearch-app">
+    <h2>UALSearch</h2>
+    <div class="visible-text">
+        <p>The UAL is a critical piece of evidence in a cloud compromise investigation because it is a centralized source for all Microsoft 365 events. The UAL contains at least (280) different operation types, including events from Entra, Exchange, SharePoint, OneDrive, Copilot, and Teams.</p>
+        
+        <p>This form will start a Unified Audit Log search. The retrieved records will be sent to Azure Data Explorer for analysis. Searches typically take 5-20 minutes depending on the amount of records received.</p>
+         
+        <form action="" method="post" id="ualsearch-form">
+            <div class="form-group">
+                <label for="tenantId">TenantId:</label>
+                <input type="text" id="TenantId" name="tenantId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="UserEmails">Email Addresses:</label>
+                <input type="text" id="UserEmails" name="UserEmails">
+                <small>Enter email addresses separated by commas (e.g., user1@example.com, user2@example.com)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="StartDate">Start Date:</label>
+                <input type="date" id="StartDate" name="StartDate">
+                <small>This will default to (30) days if not specified.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="EndDate">End Date:</label>
+                <input type="date" id="EndDate" name="EndDate">
+            </div>
+
+            <div class="form-group">
+                <label for="Operations">Operations:</label>
+                <input type="text" id="Operations" name="Operations">
+                <small>Enter operation types separated by commas (e.g., FileAccessed, MailboxLogin)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="Keyword">Keyword:</label>
+                <input type="text" id="Keyword" name="Keyword">
+                <small>Enter keywords to filter the records</small>
+            </div>
+
+            <div class="form-group">
+                <label for="IPAddress">IP Addresses:</label>
+                <input type="text" id="IPAddress" name="IPAddress">
+                <small>Enter external IP addresses separated by commas (example: 8.8.8.8, 1.1.1.1, 208.67.222.222)</small>
+            </div>
+
+            <!-- "View Records in ADX" button section -->
+            <div class="button-container"> <!-- Wrapper for buttons -->
+                <input type="submit" value="Start Audit Log Search" class="submit-btn">
+                <a href="https://dataexplorer.azure.com/clusters/{youradxclustername}/databases/logs" target="_blank" class="submit-btn" rel="noopener">View Records in ADX</a>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- /wp:html -->
+
+<!-- wp:html -->
+<style>
+    body {
+        background-color: #121212; /* Dark background */
+        color: #ffffff; /* White text for better contrast */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px 0; /* Add padding to the top and bottom */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start; /* Align items to the start */
+        min-height: 100vh; /* Ensure the body takes full height */
+    }
+    .ualsearch-app {
+        max-width: 600px;
+        margin: 20px;
+        padding: 40px 20px 20px 20px; /* Add padding to the top */
+        background: #1e1e1e; /* Dark grey background */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+        color: #ffffff; /* White text */
+        margin-bottom: 20px;
+        text-align: center; /* Center-align the title */
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ffffff; /* White text for better contrast */
+    }
+    input[type="text"],
+    input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc; /* Light grey border */
+        border-radius: 4px;
+        box-sizing: border-box;
+        transition: border-color 0.3s;
+        background: #333333; /* Darker background */
+        color: #ffffff; /* White text for better visibility */
+    }
+    input[type="text"]:focus,
+    input[type="date"]:focus {
+        border-color: #0078d4; /* Blue border on focus */
+        outline: none;
+    }
+    .button-container {
+        display: flex;
+        justify-content: center; /* Center the buttons horizontally */
+        gap: 20px; /* Add some space between the buttons */
+    }
+
+    .submit-btn, a.submit-btn {
+        display: inline-flex; /* Allows setting width and height */
+        justify-content: center; /* Center text horizontally */
+        align-items: center; /* Center text vertically */
+        width: 200px; /* Example width */
+        height: 50px; /* Example height */
+        background-color: #007bff; /* Example background color */
+        color: white; /* Text color */
+        text-decoration: none; /* Removes underline from links */
+        border: none; /* Removes border */
+        cursor: pointer; /* Changes cursor to pointer on hover */
+        border-radius: 5px; /* Optional: rounds corners */
+        font-size: 16px; /* Example font size */
+    }
+    .submit-btn:hover {
+        background-color: #005ea6; /* Darker blue on hover */
+    }
+    a {
+        color: #0078d4; /* Blue links */
+        text-decoration: none;
+    }
+    .visible-text {
+        color: #ffffff; /* White text for better visibility */
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    small {
+        display: block;
+        margin-top: 5px;
+        color: #cccccc; /* Light grey for small text */
+    }
+</style>
+<!-- /wp:html -->
+
+<!-- wp:html -->
+<script type="text/javascript">
+document.getElementById('ualsearch-form').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent the default form submission
+
+    var submitButton = e.target.querySelector('input[type="submit"]');
+    submitButton.value = "Search started"; // Update button text immediately upon click
+
+    var tenantId = document.getElementById('TenantId').value;
+    var userEmails = document.getElementById('UserEmails').value.split(',');
+    var startDate = document.getElementById('StartDate').value;
+    var endDate = document.getElementById('EndDate').value;
+    var ipAddress = document.getElementById('IPAddress').value.split(',');
+    var operations = document.getElementById('Operations').value.split(',');
+    var keyword = document.getElementById('Keyword').value;
+    
+    var body = {
+        TenantId: tenantId,
+        UserIds: userEmails,
+        StartDate: startDate,
+        EndDate: endDate,
+        IPAddress: ipAddress,
+        Operations: operations,
+        Keyword: keyword
+    };
+
+    // Send the POST request without waiting for a response
+    fetch('https://yourfunctionname.azurewebsites.net/api/ualsearch?code=uuf2y_bvjCQ_ebrJcZ_MjyHllCBmSqZJsiTm-FbjQbJhAzFulZ86tg%3D%3D', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    // Reset the button text back to original after 5 seconds
+    setTimeout(() => {
+        submitButton.value = "Start Audit Log Search";
+    }, 5000);
+});
+</script>
+<!-- /wp:html -->

@@ -1,5 +1,5 @@
 //ADXFlowmaster
-//Version: 0.2.4
+//Version: 0.4.0
 //This bicep deployment provisions the ADXFlowmaster solution
 
 //Scope
@@ -14,6 +14,11 @@ param env string
 param adxsgid string
 param vnetspace string
 param mainsnetspace string
+param funcsnetspace string
+param tenantdomain string
+param spnid string
+@secure()
+param spnsecret string
 
 //Modules
 
@@ -78,6 +83,8 @@ module virtualnetworkmodule './virtualnetwork.bicep' = {
     vnetspace: vnetspace
     mainsnetspace: mainsnetspace
     mainnsg: networksecuritygroupmodule.outputs.mainnsgid
+    funcnsg: networksecuritygroupmodule.outputs.funcnsgid
+    funcsnetspace: funcsnetspace
   }
   dependsOn: [
     resourcegroupmodule
@@ -116,5 +123,62 @@ module adxemodule './adx.bicep' = {
   dependsOn: [
     managedidpmodule
     rolemodule
+  ]
+}
+
+//This module deploys the Azure Function
+module amplsmodule './ampls.bicep' = {
+  name: 'ampls-ADXFlowmaster-${env}'
+  scope: resourceGroup('rg-ADXFlowmaster-${env}')
+  params:{
+    location: location
+    snetmainid: virtualnetworkmodule.outputs.mainsubnetresourceid
+    vnetid: virtualnetworkmodule.outputs.virtualnetworkid
+    amplsid: laworkspacemodule.outputs.amplsscopeid
+  }
+  dependsOn: [
+    managedidpmodule
+    rolemodule
+  ]
+}
+
+//This module deploys the Azure Function
+module functionmodule './function.bicep' = {
+  name: 'func-ADXFlowmaster-${env}'
+  scope: resourceGroup('rg-ADXFlowmaster-${env}')
+  params:{
+    environmentid: environmentid
+    larid: laworkspacemodule.outputs.laworkspacerid
+    location: location
+    snetmainid: virtualnetworkmodule.outputs.mainsubnetresourceid
+    umirid: managedidpmodule.outputs.umirid
+    vnetid: virtualnetworkmodule.outputs.virtualnetworkid
+    adxingesturl: adxemodule.outputs.adxingesturl
+    snetexid: virtualnetworkmodule.outputs.funcsubnetid
+    tenantdomain: tenantdomain
+    umicid: managedidpmodule.outputs.umicid
+    amplsname: laworkspacemodule.outputs.amplsscopename
+    vnetname: virtualnetworkmodule.outputs.virtualnetworkname
+    adxstname: adxemodule.outputs.adxstname
+  }
+  dependsOn: [
+    managedidpmodule
+    rolemodule
+  ]
+}
+
+//This module deploys the UMI Entra ID Role
+module entraumirole './entraidroles.bicep' = {
+  name: 'entraumi-ADXFlowmaster-${env}'
+  scope: resourceGroup('rg-ADXFlowmaster-${env}')
+  params:{
+    location: location
+    uminame: managedidpmodule.outputs.uminame
+    umirid: managedidpmodule.outputs.umirid
+    spnid: spnid
+    spnsecret: spnsecret
+  }
+  dependsOn: [
+    functionmodule
   ]
 }

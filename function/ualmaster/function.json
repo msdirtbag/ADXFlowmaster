@@ -1,0 +1,13 @@
+{
+    "bindings": [
+      {
+        "name": "Timer",
+        "type": "timerTrigger",
+        "direction": "in",
+        "schedule": "0 */5 * * * *"
+      }
+    ],
+    "disabled": false,
+    "scriptFile": "run.ps1",
+    "timeout": "00:10:00"
+}

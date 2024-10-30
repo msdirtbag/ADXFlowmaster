@@ -1,26 +1,38 @@
-// 1. Create table command
+// Database Tables
 ////////////////////////////////////////////////////////////
-.create table FlowLogFlowEventraw (data : dynamic)
 
-// 2. Create mapping command
+// Create table command
 ////////////////////////////////////////////////////////////
-.create table FlowLogFlowEventraw ingestion json mapping 'FlowLogFlowEventraw_mapping' '[{"column":"data", "Properties":{"path":"$"}}]'
+.create table ['FlowLogFlowEventraw'] (data : dynamic)
 
-// 3. Create table command
+// Create table command
 ////////////////////////////////////////////////////////////
-.create table FlowLogFlowEvent (TimeGenerated: datetime, SrcIp: string, DestIp: string, DestPort: int, TrafficDirection: string, BytesDestToSrc: int, BytesSrcToDest: int)
+.create table ['FlowLogFlowEvent'] (TimeGenerated: datetime, SrcIp: string, DestIp: string, DestPort: int, TrafficDirection: string, BytesDestToSrc: int, BytesSrcToDest: int)
 
-// 4. Create table retention command
+// Create table command
 ////////////////////////////////////////////////////////////
-.alter table FlowLogFlowEventraw policy retention
-```
-{
-    "SoftDeletePeriod": "1.00:00:00",
-    "Recoverability": "Disabled"
-}
-```
+.create table ['MicrosoftGraphActivityLogs']  (['time']:datetime, ['resourceId']:string, ['operationName']:string, ['operationVersion']:string, ['category']:string, ['resultSignature']:long, ['durationMs']:long, ['callerIpAddress']:string, ['correlationId']:guid, ['level']:string, ['location']:string, ['properties']:dynamic, ['tenantId']:guid)
 
-// 5. Create function command
+// Create table command
+////////////////////////////////////////////////////////////
+.create table ['ThreatIntelligenceIndicator']  (['Action']:string, ['Active']:bool, ['AzureTenantId']:guid, ['ConfidenceScore']:int, ['Description']:string, ['ExpirationDateTime']:datetime, ['ExternalIndicatorId']:string, ['IndicatorId']:string, ['NetworkSourceIP']:string, ['SourceSystem']:string, ['Tags']:dynamic, ['TenantId']:guid, ['ThreatType']:string, ['TimeGenerated']:datetime, ['TrafficLightProtocolLevel']:string, ['Type']:string, ['_ItemId']:guid, ['_Internal_WorkspaceResourceId']:string)
+
+// Create table command
+////////////////////////////////////////////////////////////
+.create table ['DeviceNetworkEvents']  (ActionType:string, AdditionalFields:string, DeviceId:string, DeviceName:string, InitiatingProcessAccountDomain:string, InitiatingProcessAccountName:string, InitiatingProcessAccountObjectId:string, InitiatingProcessAccountSid:string, InitiatingProcessAccountUpn:string, InitiatingProcessCommandLine:string, InitiatingProcessFileName:string, InitiatingProcessFolderPath:string, InitiatingProcessId:int, InitiatingProcessIntegrityLevel:string, InitiatingProcessMD5:string, InitiatingProcessParentFileName:string, InitiatingProcessParentId:int, InitiatingProcessSHA1:string, InitiatingProcessSHA256:string, InitiatingProcessTokenElevation:string, InitiatingProcessFileSize:int, InitiatingProcessVersionInfoCompanyName:string, InitiatingProcessVersionInfoProductName:string, InitiatingProcessVersionInfoProductVersion:string, InitiatingProcessVersionInfoInternalFileName:string, InitiatingProcessVersionInfoOriginalFileName:string, InitiatingProcessVersionInfoFileDescription:string, LocalIP:string, LocalIPType:string, LocalPort:int, MachineGroup:string, Protocol:string, RemoteIP:string, RemoteIPType:string, RemotePort:int, RemoteUrl:string, ReportId:string, Timestamp:datetime, InitiatingProcessParentCreationTime:datetime, InitiatingProcessCreationTime:datetime)
+
+// Create table command
+////////////////////////////////////////////////////////////
+.create table ['UnifiedAuditLograw']  (['RecordType']:string, ['CreationDate']:datetime, ['UserIds']:string, ['Operations']:string, ['AuditData']:dynamic, ['ResultIndex']:int, ['ResultCount']:int, ['Identity']:guid, ['IsValid']:bool, ['ObjectState']:string)
+
+//Create table command
+////////////////////////////////////////////////////////////
+.create table ['UnifiedAuditLog']  (['RecordType']:string, ['CreationDate']:string, ['UserIds']:string, ['Operations']:string, ['ResultIndex']:int, ['ResultCount']:int, ['Identity']:guid, ['IsValid']:bool, ['ObjectState']:string, ['AuditData_CreationTime']:string, ['AuditData_Id']:string, ['AuditData_Operation']:string, ['AuditData_OrganizationId']:string, ['AuditData_RecordType']:string, ['AuditData_ResultStatus']:string, ['AuditData_UserKey']:string, ['AuditData_UserType']:string, ['AuditData_Version']:string, ['AuditData_Workload']:string, ['AuditData_UserId']:string, ['AuditData_AppId']:string, ['AuditData_ClientAppId']:string, ['AuditData_ClientIPAddress']:string, ['AuditData_ClientInfoString']:string, ['AuditData_ExternalAccess']:bool, ['AuditData_InternalLogonType']:int, ['AuditData_LogonType']:int, ['AuditData_LogonUserSid']:string, ['AuditData_MailboxGuid']:string, ['AuditData_MailboxOwnerSid']:string, ['AuditData_MailboxOwnerUPN']:string, ['AuditData_OrganizationName']:string, ['AuditData_OriginatingServer']:string)
+
+// Saved KQL Functions
+////////////////////////////////////////////////////////////
+
+// Create function command
 ////////////////////////////////////////////////////////////
 .create-or-alter function 
 with (docstring = 'Transforms raw flow log data into FlowLogFlowEvent format', folder='FlowLogs')
@@ -43,28 +55,50 @@ FlowLogTransform()  {
     | project TimeGenerated, SrcIp, DestIp, DestPort, TrafficDirection, BytesDestToSrc, BytesSrcToDest
 }
 
-// 6. Create policy update command
+// Create function command
 ////////////////////////////////////////////////////////////
-.alter table FlowLogFlowEvent policy update 
-@'[{"IsEnabled": true, "Source": "FlowLogFlowEventraw", "Query": "FlowLogTransform()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+.create-or-alter function 
+with (docstring = 'Transforms raw log data into UnifiedAuditLog format', folder='UAL')
+UnifiedAuditLogTransform()  {
+    UnifiedAuditLograw
+    | extend AuditData = parse_json(AuditData)
+    | project 
+        RecordType,
+        CreationDate = tostring(CreationDate),
+        UserIds,
+        Operations,
+        ResultIndex,
+        ResultCount,
+        Identity,
+        IsValid,
+        ObjectState,
+        AuditData_CreationTime = tostring(AuditData.CreationTime),
+        AuditData_Id = tostring(AuditData.Id),
+        AuditData_Operation = tostring(AuditData.Operation),
+        AuditData_OrganizationId = tostring(AuditData.OrganizationId),
+        AuditData_RecordType = tostring(AuditData.RecordType),
+        AuditData_ResultStatus = tostring(AuditData.ResultStatus),
+        AuditData_UserKey = tostring(AuditData.UserKey),
+        AuditData_UserType = tostring(AuditData.UserType),
+        AuditData_Version = tostring(AuditData.Version),
+        AuditData_Workload = tostring(AuditData.Workload),
+        AuditData_UserId = tostring(AuditData.UserId),
+        AuditData_AppId = tostring(AuditData.AppId),
+        AuditData_ClientAppId = tostring(AuditData.ClientAppId),
+        AuditData_ClientIPAddress = tostring(AuditData.ClientIPAddress),
+        AuditData_ClientInfoString = tostring(AuditData.ClientInfoString),
+        AuditData_ExternalAccess = tobool(AuditData.ExternalAccess),
+        AuditData_InternalLogonType = toint(AuditData.InternalLogonType),
+        AuditData_LogonType = toint(AuditData.LogonType),
+        AuditData_LogonUserSid = tostring(AuditData.LogonUserSid),
+        AuditData_MailboxGuid = tostring(AuditData.MailboxGuid),
+        AuditData_MailboxOwnerSid = tostring(AuditData.MailboxOwnerSid),
+        AuditData_MailboxOwnerUPN = tostring(AuditData.MailboxOwnerUPN),
+        AuditData_OrganizationName = tostring(AuditData.OrganizationName),
+        AuditData_OriginatingServer = tostring(AuditData.OriginatingServer)
+}
 
-// 7. Create table command
-////////////////////////////////////////////////////////////
-.create table ['DeviceNetworkEvents']  (ActionType:string, AdditionalFields:string, DeviceId:string, DeviceName:string, InitiatingProcessAccountDomain:string, InitiatingProcessAccountName:string, InitiatingProcessAccountObjectId:string, InitiatingProcessAccountSid:string, InitiatingProcessAccountUpn:string, InitiatingProcessCommandLine:string, InitiatingProcessFileName:string, InitiatingProcessFolderPath:string, InitiatingProcessId:int, InitiatingProcessIntegrityLevel:string, InitiatingProcessMD5:string, InitiatingProcessParentFileName:string, InitiatingProcessParentId:int, InitiatingProcessSHA1:string, InitiatingProcessSHA256:string, InitiatingProcessTokenElevation:string, InitiatingProcessFileSize:int, InitiatingProcessVersionInfoCompanyName:string, InitiatingProcessVersionInfoProductName:string, InitiatingProcessVersionInfoProductVersion:string, InitiatingProcessVersionInfoInternalFileName:string, InitiatingProcessVersionInfoOriginalFileName:string, InitiatingProcessVersionInfoFileDescription:string, LocalIP:string, LocalIPType:string, LocalPort:int, MachineGroup:string, Protocol:string, RemoteIP:string, RemoteIPType:string, RemotePort:int, RemoteUrl:string, ReportId:string, Timestamp:datetime, InitiatingProcessParentCreationTime:datetime, InitiatingProcessCreationTime:datetime)
-
-// 8. Create mapping command
-////////////////////////////////////////////////////////////
-.create table ['DeviceNetworkEvents'] ingestion json mapping 'DeviceNetworkEvents_mapping' '[{"column":"InitiatingProcessAccountObjectId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountObjectId\']"}},{"column":"LocalPort", "Properties":{"Path":"$[\'properties\'][\'LocalPort\']"}},{"column":"InitiatingProcessMD5", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessMD5\']"}},{"column":"InitiatingProcessAccountUpn", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountUpn\']"}},{"column":"AdditionalFields", "Properties":{"Path":"$[\'properties\'][\'AdditionalFields\']"}},{"column":"InitiatingProcessId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessId\']"}},{"column":"InitiatingProcessVersionInfoOriginalFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoOriginalFileName\']"}},{"column":"LocalIP", "Properties":{"Path":"$[\'properties\'][\'LocalIP\']"}},{"column":"RemotePort", "Properties":{"Path":"$[\'properties\'][\'RemotePort\']"}},{"column":"InitiatingProcessAccountName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountName\']"}},{"column":"InitiatingProcessFolderPath", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFolderPath\']"}},{"column":"RemoteUrl", "Properties":{"Path":"$[\'properties\'][\'RemoteUrl\']"}},{"column":"InitiatingProcessAccountSid", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountSid\']"}},{"column":"RemoteIP", "Properties":{"Path":"$[\'properties\'][\'RemoteIP\']"}},{"column":"RemoteIPType", "Properties":{"Path":"$[\'properties\'][\'RemoteIPType\']"}},{"column":"InitiatingProcessFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFileName\']"}},{"column":"InitiatingProcessVersionInfoInternalFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoInternalFileName\']"}},{"column":"ActionType", "Properties":{"Path":"$[\'properties\'][\'ActionType\']"}},{"column":"MachineGroup", "Properties":{"Path":"$[\'properties\'][\'MachineGroup\']"}},{"column":"DeviceName", "Properties":{"Path":"$[\'properties\'][\'DeviceName\']"}},{"column":"InitiatingProcessFileSize", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFileSize\']"}},{"column":"Timestamp", "Properties":{"Path":"$[\'properties\'][\'Timestamp\']"}},{"column":"ReportId", "Properties":{"Path":"$[\'properties\'][\'ReportId\']"}},{"column":"InitiatingProcessIntegrityLevel", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessIntegrityLevel\']"}},{"column":"InitiatingProcessAccountDomain", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountDomain\']"}},{"column":"InitiatingProcessCreationTime", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessCreationTime\']"}},{"column":"DeviceId", "Properties":{"Path":"$[\'properties\'][\'DeviceId\']"}},{"column":"InitiatingProcessParentId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentId\']"}},{"column":"InitiatingProcessVersionInfoProductVersion", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoProductVersion\']"}},{"column":"InitiatingProcessVersionInfoCompanyName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoCompanyName\']"}},{"column":"InitiatingProcessVersionInfoProductName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoProductName\']"}},{"column":"InitiatingProcessCommandLine", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessCommandLine\']"}},{"column":"InitiatingProcessParentCreationTime", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentCreationTime\']"}},{"column":"LocalIPType", "Properties":{"Path":"$[\'properties\'][\'LocalIPType\']"}},{"column":"InitiatingProcessVersionInfoFileDescription", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoFileDescription\']"}},{"column":"InitiatingProcessTokenElevation", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessTokenElevation\']"}},{"column":"InitiatingProcessSHA256", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessSHA256\']"}},{"column":"Protocol", "Properties":{"Path":"$[\'properties\'][\'Protocol\']"}},{"column":"InitiatingProcessParentFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentFileName\']"}},{"column":"InitiatingProcessSHA1", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessSHA1\']"}}]'
-
-// 9. Create table command
-////////////////////////////////////////////////////////////
-.create table ['ThreatIntelligenceIndicator']  (['Action']:string, ['Active']:bool, ['AzureTenantId']:guid, ['ConfidenceScore']:int, ['Description']:string, ['ExpirationDateTime']:datetime, ['ExternalIndicatorId']:string, ['IndicatorId']:string, ['NetworkSourceIP']:string, ['SourceSystem']:string, ['Tags']:dynamic, ['TenantId']:guid, ['ThreatType']:string, ['TimeGenerated']:datetime, ['TrafficLightProtocolLevel']:string, ['Type']:string, ['_ItemId']:guid, ['_Internal_WorkspaceResourceId']:string)
-
-// 10. Create mapping command
-////////////////////////////////////////////////////////////
-.create table ['ThreatIntelligenceIndicator'] ingestion json mapping 'ThreatIntelligenceIndicator_mapping' '[{"column":"Action", "Properties":{"Path":"$[\'Action\']"}},{"column":"Active", "Properties":{"Path":"$[\'Active\']"}},{"column":"AzureTenantId", "Properties":{"Path":"$[\'AzureTenantId\']"}},{"column":"ConfidenceScore", "Properties":{"Path":"$[\'ConfidenceScore\']"}},{"column":"Description", "Properties":{"Path":"$[\'Description\']"}},{"column":"ExpirationDateTime", "Properties":{"Path":"$[\'ExpirationDateTime\']"}},{"column":"ExternalIndicatorId", "Properties":{"Path":"$[\'ExternalIndicatorId\']"}},{"column":"IndicatorId", "Properties":{"Path":"$[\'IndicatorId\']"}},{"column":"NetworkSourceIP", "Properties":{"Path":"$[\'NetworkSourceIP\']"}},{"column":"SourceSystem", "Properties":{"Path":"$[\'SourceSystem\']"}},{"column":"Tags", "Properties":{"Path":"$[\'Tags\']"}},{"column":"TenantId", "Properties":{"Path":"$[\'TenantId\']"}},{"column":"ThreatType", "Properties":{"Path":"$[\'ThreatType\']"}},{"column":"TimeGenerated", "Properties":{"Path":"$[\'TimeGenerated\']"}},{"column":"TrafficLightProtocolLevel", "Properties":{"Path":"$[\'TrafficLightProtocolLevel\']"}},{"column":"Type", "Properties":{"Path":"$[\'Type\']"}},{"column":"_ItemId", "Properties":{"Path":"$[\'_ItemId\']"}},{"column":"_Internal_WorkspaceResourceId", "Properties":{"Path":"$[\'_Internal_WorkspaceResourceId\']"}}]'
-
-// 11. Create function command
+// Create function command
 ////////////////////////////////////////////////////////////
 .create-or-alter function 
 with (docstring = 'Searches network logs for Sentinel IOCs', folder='FlowLogs')
@@ -86,14 +120,14 @@ FlowLogFlowEvent
 )
 }
 
-// 12. Create function command
+// Create function command
 ////////////////////////////////////////////////////////////
 .create-or-alter function 
 with (docstring = 'Searches network logs for opensource IOCs', folder='FlowLogs')
 ADXFlowmasterleadsOS()  {
     let BlockList = (externaldata(ip:string)
 [@"https://rules.emergingthreats.net/blockrules/compromised-ips.txt",
-@"https://raw.githubusercontent.com/stamparm/ipsum/master/levels/5.txt",
+@"https://raw.githubusercontent.com/stamparm/ipsum/master/levels/3.txt",
 @"https://cinsscore.com/list/ci-badguys.txt",
 @"https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt"
 ]
@@ -105,3 +139,62 @@ DeviceNetworkEvents
 | where RemoteIP  in (BlockList)
 | union (FlowLogFlowEvent| where SrcIp in (BlockList) or  DestIp in (BlockList))
 }
+
+// Mapping commands
+////////////////////////////////////////////////////////////
+
+// Create mapping command
+////////////////////////////////////////////////////////////
+.create table ['FlowLogFlowEventraw'] ingestion json mapping 'FlowLogFlowEventraw_mapping' '[{"column":"data", "Properties":{"path":"$"}}]'
+
+// Create mapping command
+////////////////////////////////////////////////////////////
+.create table ['UnifiedAuditLograw'] ingestion json mapping 'UnifiedAuditLograw_mapping' '[{"column":"RecordType", "Properties":{"Path":"$[\'RecordType\']"}},{"column":"CreationDate", "Properties":{"Path":"$[\'CreationDate\']"}},{"column":"UserIds", "Properties":{"Path":"$[\'UserIds\']"}},{"column":"Operations", "Properties":{"Path":"$[\'Operations\']"}},{"column":"AuditData", "Properties":{"Path":"$[\'AuditData\']"}},{"column":"ResultIndex", "Properties":{"Path":"$[\'ResultIndex\']"}},{"column":"ResultCount", "Properties":{"Path":"$[\'ResultCount\']"}},{"column":"Identity", "Properties":{"Path":"$[\'Identity\']"}},{"column":"IsValid", "Properties":{"Path":"$[\'IsValid\']"}},{"column":"ObjectState", "Properties":{"Path":"$[\'ObjectState\']"}}]'
+
+// Create mapping command
+////////////////////////////////////////////////////////////
+.create table ['ThreatIntelligenceIndicator'] ingestion json mapping 'ThreatIntelligenceIndicator_mapping' '[{"column":"Action", "Properties":{"Path":"$[\'Action\']"}},{"column":"Active", "Properties":{"Path":"$[\'Active\']"}},{"column":"AzureTenantId", "Properties":{"Path":"$[\'AzureTenantId\']"}},{"column":"ConfidenceScore", "Properties":{"Path":"$[\'ConfidenceScore\']"}},{"column":"Description", "Properties":{"Path":"$[\'Description\']"}},{"column":"ExpirationDateTime", "Properties":{"Path":"$[\'ExpirationDateTime\']"}},{"column":"ExternalIndicatorId", "Properties":{"Path":"$[\'ExternalIndicatorId\']"}},{"column":"IndicatorId", "Properties":{"Path":"$[\'IndicatorId\']"}},{"column":"NetworkSourceIP", "Properties":{"Path":"$[\'NetworkSourceIP\']"}},{"column":"SourceSystem", "Properties":{"Path":"$[\'SourceSystem\']"}},{"column":"Tags", "Properties":{"Path":"$[\'Tags\']"}},{"column":"TenantId", "Properties":{"Path":"$[\'TenantId\']"}},{"column":"ThreatType", "Properties":{"Path":"$[\'ThreatType\']"}},{"column":"TimeGenerated", "Properties":{"Path":"$[\'TimeGenerated\']"}},{"column":"TrafficLightProtocolLevel", "Properties":{"Path":"$[\'TrafficLightProtocolLevel\']"}},{"column":"Type", "Properties":{"Path":"$[\'Type\']"}},{"column":"_ItemId", "Properties":{"Path":"$[\'_ItemId\']"}},{"column":"_Internal_WorkspaceResourceId", "Properties":{"Path":"$[\'_Internal_WorkspaceResourceId\']"}}]'
+
+// Create mapping command
+////////////////////////////////////////////////////////////
+.create table ['DeviceNetworkEvents'] ingestion json mapping 'DeviceNetworkEvents_mapping' '[{"column":"InitiatingProcessAccountObjectId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountObjectId\']"}},{"column":"LocalPort", "Properties":{"Path":"$[\'properties\'][\'LocalPort\']"}},{"column":"InitiatingProcessMD5", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessMD5\']"}},{"column":"InitiatingProcessAccountUpn", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountUpn\']"}},{"column":"AdditionalFields", "Properties":{"Path":"$[\'properties\'][\'AdditionalFields\']"}},{"column":"InitiatingProcessId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessId\']"}},{"column":"InitiatingProcessVersionInfoOriginalFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoOriginalFileName\']"}},{"column":"LocalIP", "Properties":{"Path":"$[\'properties\'][\'LocalIP\']"}},{"column":"RemotePort", "Properties":{"Path":"$[\'properties\'][\'RemotePort\']"}},{"column":"InitiatingProcessAccountName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountName\']"}},{"column":"InitiatingProcessFolderPath", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFolderPath\']"}},{"column":"RemoteUrl", "Properties":{"Path":"$[\'properties\'][\'RemoteUrl\']"}},{"column":"InitiatingProcessAccountSid", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountSid\']"}},{"column":"RemoteIP", "Properties":{"Path":"$[\'properties\'][\'RemoteIP\']"}},{"column":"RemoteIPType", "Properties":{"Path":"$[\'properties\'][\'RemoteIPType\']"}},{"column":"InitiatingProcessFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFileName\']"}},{"column":"InitiatingProcessVersionInfoInternalFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoInternalFileName\']"}},{"column":"ActionType", "Properties":{"Path":"$[\'properties\'][\'ActionType\']"}},{"column":"MachineGroup", "Properties":{"Path":"$[\'properties\'][\'MachineGroup\']"}},{"column":"DeviceName", "Properties":{"Path":"$[\'properties\'][\'DeviceName\']"}},{"column":"InitiatingProcessFileSize", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessFileSize\']"}},{"column":"Timestamp", "Properties":{"Path":"$[\'properties\'][\'Timestamp\']"}},{"column":"ReportId", "Properties":{"Path":"$[\'properties\'][\'ReportId\']"}},{"column":"InitiatingProcessIntegrityLevel", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessIntegrityLevel\']"}},{"column":"InitiatingProcessAccountDomain", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessAccountDomain\']"}},{"column":"InitiatingProcessCreationTime", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessCreationTime\']"}},{"column":"DeviceId", "Properties":{"Path":"$[\'properties\'][\'DeviceId\']"}},{"column":"InitiatingProcessParentId", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentId\']"}},{"column":"InitiatingProcessVersionInfoProductVersion", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoProductVersion\']"}},{"column":"InitiatingProcessVersionInfoCompanyName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoCompanyName\']"}},{"column":"InitiatingProcessVersionInfoProductName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoProductName\']"}},{"column":"InitiatingProcessCommandLine", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessCommandLine\']"}},{"column":"InitiatingProcessParentCreationTime", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentCreationTime\']"}},{"column":"LocalIPType", "Properties":{"Path":"$[\'properties\'][\'LocalIPType\']"}},{"column":"InitiatingProcessVersionInfoFileDescription", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessVersionInfoFileDescription\']"}},{"column":"InitiatingProcessTokenElevation", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessTokenElevation\']"}},{"column":"InitiatingProcessSHA256", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessSHA256\']"}},{"column":"Protocol", "Properties":{"Path":"$[\'properties\'][\'Protocol\']"}},{"column":"InitiatingProcessParentFileName", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessParentFileName\']"}},{"column":"InitiatingProcessSHA1", "Properties":{"Path":"$[\'properties\'][\'InitiatingProcessSHA1\']"}}]'
+
+// Create mapping command
+////////////////////////////////////////////////////////////
+.create table ['MicrosoftGraphActivityLogs'] ingestion json mapping 'MicrosoftGraphActivityLogs_mapping' '[{"column":"time", "Properties":{"Path":"$[\'time\']"}},{"column":"resourceId", "Properties":{"Path":"$[\'resourceId\']"}},{"column":"operationName", "Properties":{"Path":"$[\'operationName\']"}},{"column":"operationVersion", "Properties":{"Path":"$[\'operationVersion\']"}},{"column":"category", "Properties":{"Path":"$[\'category\']"}},{"column":"resultSignature", "Properties":{"Path":"$[\'resultSignature\']"}},{"column":"durationMs", "Properties":{"Path":"$[\'durationMs\']"}},{"column":"callerIpAddress", "Properties":{"Path":"$[\'callerIpAddress\']"}},{"column":"correlationId", "Properties":{"Path":"$[\'correlationId\']"}},{"column":"level", "Properties":{"Path":"$[\'level\']"}},{"column":"location", "Properties":{"Path":"$[\'location\']"}},{"column":"properties", "Properties":{"Path":"$[\'properties\']"}},{"column":"tenantId", "Properties":{"Path":"$[\'tenantId\']"}}]'
+
+// Migrate data policy
+////////////////////////////////////////////////////////////
+
+// Create policy update command
+////////////////////////////////////////////////////////////
+.alter table UnifiedAuditLog policy update 
+@'[{"IsEnabled": true, "Source": "UnifiedAuditLograw", "Query": "UnifiedAuditLogTransform()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+
+// Create policy update command
+////////////////////////////////////////////////////////////
+.alter table FlowLogFlowEvent policy update 
+@'[{"IsEnabled": true, "Source": "FlowLogFlowEventraw", "Query": "FlowLogTransform()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+
+// Table retention policy
+////////////////////////////////////////////////////////////
+
+// Create table retention command
+////////////////////////////////////////////////////////////
+.alter table FlowLogFlowEventraw policy retention
+```
+{
+    "SoftDeletePeriod": "1.00:00:00",
+    "Recoverability": "Disabled"
+}
+```
+
+//Create table retention command
+////////////////////////////////////////////////////////////
+.alter table UnifiedAuditLograw policy retention
+```
+{
+    "SoftDeletePeriod": "1.00:00:00",
+    "Recoverability": "Disabled"
+}
+```

@@ -9,6 +9,8 @@ param larid string
 param location string
 param vnetspace string
 param mainsnetspace string
+param funcsnetspace string
+param funcnsg string
 param mainnsg string
 
 //Resources
@@ -41,6 +43,31 @@ resource virtualnetwork 'Microsoft.Network/virtualNetworks@2023-09-01' = {
           ]
         }
       }
+      {
+        name: 'func'
+        properties: {
+          addressPrefix: funcsnetspace
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Disabled'
+          defaultOutboundAccess: false
+          networkSecurityGroup: {
+            id: funcnsg
+          }
+          serviceEndpoints: [
+            {
+              service: 'Microsoft.AzureActiveDirectory'
+            }
+          ]
+          delegations: [
+            {
+              name: 'Microsoft.Web/serverFarms'
+              properties: {
+                serviceName: 'Microsoft.Web/serverFarms'
+              }
+            }
+          ]
+        }
+      }
     ]
   }
 }
@@ -64,8 +91,11 @@ resource virtualnetworkdiag 'Microsoft.Insights/diagnosticSettings@2021-05-01-pr
 output virtualnetworkid string = virtualnetwork.id
 output virtualnetworkname string = virtualnetwork.name
 output mainsubnetresourceid string = resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-ADXFlowmaster-${env}', 'main')
+output funcsubnetresourceid string = resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-ADXFlowmaster-${env}', 'func')
 output mainsubnetid string = virtualnetwork.properties.subnets[0].id
+output funcsubnetid string = virtualnetwork.properties.subnets[1].id
 output mainsubnetname string = virtualnetwork.properties.subnets[0].name
+output funcsubnetname string = virtualnetwork.properties.subnets[1].name
 
 
 

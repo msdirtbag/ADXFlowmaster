@@ -12,7 +12,7 @@ param location string
 //Resources
 
 //This deploys the Resource Group for the environment.
-resource resourcegroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourcegroup 'Microsoft.Resources/resourceGroups@2024-08-01' = {
   name: 'rg-ADXFlowmaster-${env}'
   location: location
 }
