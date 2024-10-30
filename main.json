@@ -1,6 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.30.23.60470",
+      "templateHash": "2964352894872581889"
+    }
+  },
   "parameters": {
     "env": {
       "type": "string"
@@ -13,6 +20,18 @@
     },
     "mainsnetspace": {
       "type": "string"
+    },
+    "funcsnetspace": {
+      "type": "string"
+    },
+    "tenantdomain": {
+      "type": "string"
+    },
+    "spnid": {
+      "type": "string"
+    },
+    "spnsecret": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -44,8 +63,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "18434568786493412692"
+              "version": "0.30.23.60470",
+              "templateHash": "17211736145137878517"
             }
           },
           "parameters": {
@@ -59,7 +78,7 @@
           "resources": [
             {
               "type": "Microsoft.Resources/resourceGroups",
-              "apiVersion": "2022-09-01",
+              "apiVersion": "2024-08-01",
               "name": "[format('rg-ADXFlowmaster-{0}', parameters('env'))]",
               "location": "[parameters('location')]"
             }
@@ -97,8 +116,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "536585717907025447"
+              "version": "0.30.23.60470",
+              "templateHash": "16957918224508574330"
             }
           },
           "parameters": {
@@ -162,8 +181,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "2226720504095562941"
+              "version": "0.30.23.60470",
+              "templateHash": "17365589475509955279"
             }
           },
           "parameters": {
@@ -174,9 +193,13 @@
           "variables": {
             "contributorrole": "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
             "eventgridrole": "/providers/Microsoft.Authorization/roleDefinitions/1e241071-0855-49ea-94dc-649edcd759de",
-            "blobrole": "/providers/Microsoft.Authorization/roleDefinitions/ba92f5b4-2d11-453d-a403-e96b0029c9fe",
+            "blobrole": "/providers/Microsoft.Authorization/roleDefinitions/b7e6dc6d-f1e8-4753-8033-0f276bb0955b",
             "eventhubrecieverole": "/providers/Microsoft.Authorization/roleDefinitions/a638d3c7-ab3a-418d-83e6-5f17a39d4fde",
-            "eventhubsendrole": "/providers/Microsoft.Authorization/roleDefinitions/2b629674-e913-4c01-ae53-ef4638d8f975"
+            "eventhubsendrole": "/providers/Microsoft.Authorization/roleDefinitions/2b629674-e913-4c01-ae53-ef4638d8f975",
+            "metricspublisherrole": "/providers/Microsoft.Authorization/roleDefinitions/3913510d-42f4-4e42-8a64-420c390055eb",
+            "stcontributorrole": "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab",
+            "stqueuerole": "/providers/Microsoft.Authorization/roleDefinitions/974c5e8b-45b9-4653-ba55-5f855dd0fb88",
+            "sttablerole": "/providers/Microsoft.Authorization/roleDefinitions/0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3"
           },
           "resources": [
             {
@@ -228,6 +251,46 @@
                 "principalId": "[parameters('principalId')]",
                 "principalType": "ServicePrincipal"
               }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(parameters('principalId'), variables('metricspublisherrole'), subscription().id)]",
+              "properties": {
+                "roleDefinitionId": "[variables('metricspublisherrole')]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(parameters('principalId'), variables('stcontributorrole'), subscription().id)]",
+              "properties": {
+                "roleDefinitionId": "[variables('stcontributorrole')]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(parameters('principalId'), variables('stqueuerole'), subscription().id)]",
+              "properties": {
+                "roleDefinitionId": "[variables('stqueuerole')]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "name": "[guid(parameters('principalId'), variables('sttablerole'), subscription().id)]",
+              "properties": {
+                "roleDefinitionId": "[variables('sttablerole')]",
+                "principalId": "[parameters('principalId')]",
+                "principalType": "ServicePrincipal"
+              }
             }
           ]
         }
@@ -263,8 +326,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "16616354465302885911"
+              "version": "0.30.23.60470",
+              "templateHash": "14605362376770666018"
             }
           },
           "parameters": {
@@ -281,7 +344,7 @@
           "resources": [
             {
               "type": "Microsoft.OperationalInsights/workspaces",
-              "apiVersion": "2022-10-01",
+              "apiVersion": "2023-09-01",
               "name": "[format('log-ADXFlowmaster-{0}', parameters('environmentid'))]",
               "location": "[parameters('location')]",
               "identity": {
@@ -292,13 +355,40 @@
               },
               "properties": {
                 "features": {
+                  "disableLocalAuth": true,
                   "enableDataExport": true
                 },
+                "publicNetworkAccessForIngestion": "Disabled",
+                "publicNetworkAccessForQuery": "Enabled",
                 "retentionInDays": 90,
                 "sku": {
                   "name": "PerGB2018"
                 }
               }
+            },
+            {
+              "type": "microsoft.insights/privateLinkScopes",
+              "apiVersion": "2021-07-01-preview",
+              "name": "[format('ampls-ADXFlowmaster-{0}', parameters('environmentid'))]",
+              "location": "global",
+              "properties": {
+                "accessModeSettings": {
+                  "ingestionAccessMode": "PrivateOnly",
+                  "queryAccessMode": "Open"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Insights/privateLinkScopes/scopedResources",
+              "apiVersion": "2021-07-01-preview",
+              "name": "[format('{0}/{1}', format('ampls-ADXFlowmaster-{0}', parameters('environmentid')), format('amplslink-ADXFlowmaster-{0}', parameters('environmentid')))]",
+              "properties": {
+                "linkedResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', format('log-ADXFlowmaster-{0}', parameters('environmentid')))]"
+              },
+              "dependsOn": [
+                "[resourceId('microsoft.insights/privateLinkScopes', format('ampls-ADXFlowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', format('log-ADXFlowmaster-{0}', parameters('environmentid')))]"
+              ]
             }
           ],
           "outputs": {
@@ -309,6 +399,14 @@
             "laworkspacename": {
               "type": "string",
               "value": "[format('log-ADXFlowmaster-{0}', parameters('environmentid'))]"
+            },
+            "amplsscopeid": {
+              "type": "string",
+              "value": "[resourceId('microsoft.insights/privateLinkScopes', format('ampls-ADXFlowmaster-{0}', parameters('environmentid')))]"
+            },
+            "amplsscopename": {
+              "type": "string",
+              "value": "[format('ampls-ADXFlowmaster-{0}', parameters('environmentid'))]"
             }
           }
         }
@@ -346,6 +444,12 @@
           },
           "mainnsg": {
             "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('nsg-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.mainnsgid.value]"
+          },
+          "funcnsg": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('nsg-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.funcnsgid.value]"
+          },
+          "funcsnetspace": {
+            "value": "[parameters('funcsnetspace')]"
           }
         },
         "template": {
@@ -354,8 +458,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "12304469870690515897"
+              "version": "0.30.23.60470",
+              "templateHash": "11097398970091597407"
             }
           },
           "parameters": {
@@ -372,6 +476,12 @@
               "type": "string"
             },
             "mainsnetspace": {
+              "type": "string"
+            },
+            "funcsnetspace": {
+              "type": "string"
+            },
+            "funcnsg": {
               "type": "string"
             },
             "mainnsg": {
@@ -404,6 +514,31 @@
                       "serviceEndpoints": [
                         {
                           "service": "Microsoft.AzureActiveDirectory"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "func",
+                    "properties": {
+                      "addressPrefix": "[parameters('funcsnetspace')]",
+                      "privateEndpointNetworkPolicies": "Disabled",
+                      "privateLinkServiceNetworkPolicies": "Disabled",
+                      "defaultOutboundAccess": false,
+                      "networkSecurityGroup": {
+                        "id": "[parameters('funcnsg')]"
+                      },
+                      "serviceEndpoints": [
+                        {
+                          "service": "Microsoft.AzureActiveDirectory"
+                        }
+                      ],
+                      "delegations": [
+                        {
+                          "name": "Microsoft.Web/serverFarms",
+                          "properties": {
+                            "serviceName": "Microsoft.Web/serverFarms"
+                          }
                         }
                       ]
                     }
@@ -443,13 +578,25 @@
               "type": "string",
               "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-ADXFlowmaster-{0}', parameters('env')), 'main')]"
             },
+            "funcsubnetresourceid": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', format('vnet-ADXFlowmaster-{0}', parameters('env')), 'func')]"
+            },
             "mainsubnetid": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2023-09-01').subnets[0].id]"
             },
+            "funcsubnetid": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2023-09-01').subnets[1].id]"
+            },
             "mainsubnetname": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2023-09-01').subnets[0].name]"
+            },
+            "funcsubnetname": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2023-09-01').subnets[1].name]"
             }
           }
         }
@@ -487,8 +634,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "17008417519433648842"
+              "version": "0.30.23.60470",
+              "templateHash": "8354218343284787928"
             }
           },
           "parameters": {
@@ -506,7 +653,7 @@
             {
               "type": "Microsoft.Network/networkSecurityGroups",
               "apiVersion": "2023-04-01",
-              "name": "[format('nsg-ADXFlowmaster-{0}', parameters('env'))]",
+              "name": "[format('nsg-ADXFlowmaster-main-{0}', parameters('env'))]",
               "location": "[parameters('location')]",
               "properties": {
                 "securityRules": [
@@ -520,19 +667,6 @@
                       "destinationAddressPrefix": "VirtualNetwork",
                       "access": "Allow",
                       "priority": 800,
-                      "direction": "Inbound"
-                    }
-                  },
-                  {
-                    "name": "Deny_All_Internet_Inbound",
-                    "properties": {
-                      "protocol": "*",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "*",
-                      "sourceAddressPrefix": "Internet",
-                      "destinationAddressPrefix": "VirtualNetwork",
-                      "access": "Deny",
-                      "priority": 999,
                       "direction": "Inbound"
                     }
                   },
@@ -561,19 +695,6 @@
                       "priority": 900,
                       "direction": "Outbound"
                     }
-                  },
-                  {
-                    "name": "Deny_All_Internet_Outbound",
-                    "properties": {
-                      "protocol": "*",
-                      "sourcePortRange": "*",
-                      "destinationPortRange": "*",
-                      "sourceAddressPrefix": "VirtualNetwork",
-                      "destinationAddressPrefix": "Internet",
-                      "access": "Deny",
-                      "priority": 999,
-                      "direction": "Outbound"
-                    }
                   }
                 ]
               }
@@ -581,7 +702,7 @@
             {
               "type": "Microsoft.Insights/diagnosticSettings",
               "apiVersion": "2021-05-01-preview",
-              "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', format('nsg-ADXFlowmaster-{0}', parameters('env')))]",
+              "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', format('nsg-ADXFlowmaster-main-{0}', parameters('env')))]",
               "name": "Monitor-mainnsg",
               "properties": {
                 "logs": [
@@ -593,14 +714,85 @@
                 "workspaceId": "[parameters('larid')]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-{0}', parameters('env')))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-main-{0}', parameters('env')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[format('nsg-ADXFlowmaster-func-{0}', parameters('env'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "Allow_VNET_Inbound",
+                    "properties": {
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "*",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "VirtualNetwork",
+                      "access": "Allow",
+                      "priority": 800,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Allow_VNET_Outbound",
+                    "properties": {
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "*",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "VirtualNetwork",
+                      "access": "Allow",
+                      "priority": 800,
+                      "direction": "Outbound"
+                    }
+                  },
+                  {
+                    "name": "Allow_AzureCloud_Outbound",
+                    "properties": {
+                      "protocol": "*",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "*",
+                      "sourceAddressPrefix": "VirtualNetwork",
+                      "destinationAddressPrefix": "AzureCloud",
+                      "access": "Allow",
+                      "priority": 900,
+                      "direction": "Outbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Network/networkSecurityGroups/{0}', format('nsg-ADXFlowmaster-func-{0}', parameters('env')))]",
+              "name": "Monitor-funcnsg",
+              "properties": {
+                "logs": [
+                  {
+                    "categoryGroup": "allLogs",
+                    "enabled": true
+                  }
+                ],
+                "workspaceId": "[parameters('larid')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-func-{0}', parameters('env')))]"
               ]
             }
           ],
           "outputs": {
             "mainnsgid": {
               "type": "string",
-              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-{0}', parameters('env')))]"
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-main-{0}', parameters('env')))]"
+            },
+            "funcnsgid": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/networkSecurityGroups', format('nsg-ADXFlowmaster-func-{0}', parameters('env')))]"
             }
           }
         }
@@ -652,8 +844,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.26.170.59819",
-              "templateHash": "9229694546458471209"
+              "version": "0.30.23.60470",
+              "templateHash": "5811623513389851009"
             }
           },
           "parameters": {
@@ -683,7 +875,8 @@
             }
           },
           "variables": {
-            "$fxv#0": "// 1. Create table command\r\n////////////////////////////////////////////////////////////\r\n.create table FlowLogFlowEventraw (data : dynamic)\r\n\r\n// 2. Create mapping command\r\n////////////////////////////////////////////////////////////\r\n.create table FlowLogFlowEventraw ingestion json mapping 'FlowLogFlowEventraw_mapping' '[{\"column\":\"data\", \"Properties\":{\"path\":\"$\"}}]'\r\n\r\n// 3. Create table command\r\n////////////////////////////////////////////////////////////\r\n.create table FlowLogFlowEvent (TimeGenerated: datetime, SrcIp: string, DestIp: string, DestPort: int, TrafficDirection: string, BytesDestToSrc: int, BytesSrcToDest: int)\r\n\r\n// 4. Create table retention command\r\n////////////////////////////////////////////////////////////\r\n.alter table FlowLogFlowEventraw policy retention\r\n```\r\n{\r\n    \"SoftDeletePeriod\": \"1.00:00:00\",\r\n    \"Recoverability\": \"Disabled\"\r\n}\r\n```\r\n\r\n// 5. Create function command\r\n////////////////////////////////////////////////////////////\r\n.create-or-alter function \r\nwith (docstring = 'Transforms raw flow log data into FlowLogFlowEvent format', folder='FlowLogs')\r\nFlowLogTransform()  {\r\n    FlowLogFlowEventraw\r\n    | extend recordsArray = todynamic(data.records)\r\n    | mv-expand record = recordsArray\r\n    | mv-expand flowRecord = record.flowRecords.flows\r\n    | mv-expand flowGroup = flowRecord.flowGroups\r\n    | mv-expand flowTuple = flowGroup.flowTuples\r\n    | extend tupleParts = split(flowTuple, \",\")\r\n    | extend TimeGenerated = datetime_add('millisecond', tolong(tupleParts[0]), datetime(1970-01-01)),\r\n          SrcIp = tostring(tupleParts[1]),\r\n          DestIp = tostring(tupleParts[2]),\r\n          DestPort = toint(tupleParts[4]),\r\n          TrafficDirection = tostring(tupleParts[6]),\r\n          BytesSrcToDest = toint(tupleParts[10]),\r\n          BytesDestToSrc = toint(tupleParts[12])\r\n    | project TimeGenerated, SrcIp, DestIp, DestPort, TrafficDirection, BytesDestToSrc, BytesSrcToDest\r\n}\r\n\r\n// 6. Create policy update command\r\n////////////////////////////////////////////////////////////\r\n.alter table FlowLogFlowEvent policy update \r\n@'[{\"IsEnabled\": true, \"Source\": \"FlowLogFlowEventraw\", \"Query\": \"FlowLogTransform()\", \"IsTransactional\": false, \"PropagateIngestionProperties\": false}]'\r\n\r\n// 7. Create table command\r\n////////////////////////////////////////////////////////////\r\n.create table ['DeviceNetworkEvents']  (ActionType:string, AdditionalFields:string, DeviceId:string, DeviceName:string, InitiatingProcessAccountDomain:string, InitiatingProcessAccountName:string, InitiatingProcessAccountObjectId:string, InitiatingProcessAccountSid:string, InitiatingProcessAccountUpn:string, InitiatingProcessCommandLine:string, InitiatingProcessFileName:string, InitiatingProcessFolderPath:string, InitiatingProcessId:int, InitiatingProcessIntegrityLevel:string, InitiatingProcessMD5:string, InitiatingProcessParentFileName:string, InitiatingProcessParentId:int, InitiatingProcessSHA1:string, InitiatingProcessSHA256:string, InitiatingProcessTokenElevation:string, InitiatingProcessFileSize:int, InitiatingProcessVersionInfoCompanyName:string, InitiatingProcessVersionInfoProductName:string, InitiatingProcessVersionInfoProductVersion:string, InitiatingProcessVersionInfoInternalFileName:string, InitiatingProcessVersionInfoOriginalFileName:string, InitiatingProcessVersionInfoFileDescription:string, LocalIP:string, LocalIPType:string, LocalPort:int, MachineGroup:string, Protocol:string, RemoteIP:string, RemoteIPType:string, RemotePort:int, RemoteUrl:string, ReportId:string, Timestamp:datetime, InitiatingProcessParentCreationTime:datetime, InitiatingProcessCreationTime:datetime)\r\n\r\n// 8. Create mapping command\r\n////////////////////////////////////////////////////////////\r\n.create table ['DeviceNetworkEvents'] ingestion json mapping 'DeviceNetworkEvents_mapping' '[{\"column\":\"InitiatingProcessAccountObjectId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountObjectId\\']\"}},{\"column\":\"LocalPort\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalPort\\']\"}},{\"column\":\"InitiatingProcessMD5\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessMD5\\']\"}},{\"column\":\"InitiatingProcessAccountUpn\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountUpn\\']\"}},{\"column\":\"AdditionalFields\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'AdditionalFields\\']\"}},{\"column\":\"InitiatingProcessId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessId\\']\"}},{\"column\":\"InitiatingProcessVersionInfoOriginalFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoOriginalFileName\\']\"}},{\"column\":\"LocalIP\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalIP\\']\"}},{\"column\":\"RemotePort\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemotePort\\']\"}},{\"column\":\"InitiatingProcessAccountName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountName\\']\"}},{\"column\":\"InitiatingProcessFolderPath\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFolderPath\\']\"}},{\"column\":\"RemoteUrl\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteUrl\\']\"}},{\"column\":\"InitiatingProcessAccountSid\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountSid\\']\"}},{\"column\":\"RemoteIP\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteIP\\']\"}},{\"column\":\"RemoteIPType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteIPType\\']\"}},{\"column\":\"InitiatingProcessFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFileName\\']\"}},{\"column\":\"InitiatingProcessVersionInfoInternalFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoInternalFileName\\']\"}},{\"column\":\"ActionType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'ActionType\\']\"}},{\"column\":\"MachineGroup\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'MachineGroup\\']\"}},{\"column\":\"DeviceName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'DeviceName\\']\"}},{\"column\":\"InitiatingProcessFileSize\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFileSize\\']\"}},{\"column\":\"Timestamp\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'Timestamp\\']\"}},{\"column\":\"ReportId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'ReportId\\']\"}},{\"column\":\"InitiatingProcessIntegrityLevel\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessIntegrityLevel\\']\"}},{\"column\":\"InitiatingProcessAccountDomain\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountDomain\\']\"}},{\"column\":\"InitiatingProcessCreationTime\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessCreationTime\\']\"}},{\"column\":\"DeviceId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'DeviceId\\']\"}},{\"column\":\"InitiatingProcessParentId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentId\\']\"}},{\"column\":\"InitiatingProcessVersionInfoProductVersion\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoProductVersion\\']\"}},{\"column\":\"InitiatingProcessVersionInfoCompanyName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoCompanyName\\']\"}},{\"column\":\"InitiatingProcessVersionInfoProductName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoProductName\\']\"}},{\"column\":\"InitiatingProcessCommandLine\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessCommandLine\\']\"}},{\"column\":\"InitiatingProcessParentCreationTime\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentCreationTime\\']\"}},{\"column\":\"LocalIPType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalIPType\\']\"}},{\"column\":\"InitiatingProcessVersionInfoFileDescription\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoFileDescription\\']\"}},{\"column\":\"InitiatingProcessTokenElevation\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessTokenElevation\\']\"}},{\"column\":\"InitiatingProcessSHA256\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessSHA256\\']\"}},{\"column\":\"Protocol\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'Protocol\\']\"}},{\"column\":\"InitiatingProcessParentFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentFileName\\']\"}},{\"column\":\"InitiatingProcessSHA1\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessSHA1\\']\"}}]'\r\n\r\n// 9. Create table command\r\n////////////////////////////////////////////////////////////\r\n.create table ['ThreatIntelligenceIndicator']  (['Action']:string, ['Active']:bool, ['AzureTenantId']:guid, ['ConfidenceScore']:int, ['Description']:string, ['ExpirationDateTime']:datetime, ['ExternalIndicatorId']:string, ['IndicatorId']:string, ['NetworkSourceIP']:string, ['SourceSystem']:string, ['Tags']:dynamic, ['TenantId']:guid, ['ThreatType']:string, ['TimeGenerated']:datetime, ['TrafficLightProtocolLevel']:string, ['Type']:string, ['_ItemId']:guid, ['_Internal_WorkspaceResourceId']:string)\r\n\r\n// 10. Create mapping command\r\n////////////////////////////////////////////////////////////\r\n.create table ['ThreatIntelligenceIndicator'] ingestion json mapping 'ThreatIntelligenceIndicator_mapping' '[{\"column\":\"Action\", \"Properties\":{\"Path\":\"$[\\'Action\\']\"}},{\"column\":\"Active\", \"Properties\":{\"Path\":\"$[\\'Active\\']\"}},{\"column\":\"AzureTenantId\", \"Properties\":{\"Path\":\"$[\\'AzureTenantId\\']\"}},{\"column\":\"ConfidenceScore\", \"Properties\":{\"Path\":\"$[\\'ConfidenceScore\\']\"}},{\"column\":\"Description\", \"Properties\":{\"Path\":\"$[\\'Description\\']\"}},{\"column\":\"ExpirationDateTime\", \"Properties\":{\"Path\":\"$[\\'ExpirationDateTime\\']\"}},{\"column\":\"ExternalIndicatorId\", \"Properties\":{\"Path\":\"$[\\'ExternalIndicatorId\\']\"}},{\"column\":\"IndicatorId\", \"Properties\":{\"Path\":\"$[\\'IndicatorId\\']\"}},{\"column\":\"NetworkSourceIP\", \"Properties\":{\"Path\":\"$[\\'NetworkSourceIP\\']\"}},{\"column\":\"SourceSystem\", \"Properties\":{\"Path\":\"$[\\'SourceSystem\\']\"}},{\"column\":\"Tags\", \"Properties\":{\"Path\":\"$[\\'Tags\\']\"}},{\"column\":\"TenantId\", \"Properties\":{\"Path\":\"$[\\'TenantId\\']\"}},{\"column\":\"ThreatType\", \"Properties\":{\"Path\":\"$[\\'ThreatType\\']\"}},{\"column\":\"TimeGenerated\", \"Properties\":{\"Path\":\"$[\\'TimeGenerated\\']\"}},{\"column\":\"TrafficLightProtocolLevel\", \"Properties\":{\"Path\":\"$[\\'TrafficLightProtocolLevel\\']\"}},{\"column\":\"Type\", \"Properties\":{\"Path\":\"$[\\'Type\\']\"}},{\"column\":\"_ItemId\", \"Properties\":{\"Path\":\"$[\\'_ItemId\\']\"}},{\"column\":\"_Internal_WorkspaceResourceId\", \"Properties\":{\"Path\":\"$[\\'_Internal_WorkspaceResourceId\\']\"}}]'\r\n\r\n// 11. Create function command\r\n////////////////////////////////////////////////////////////\r\n.create-or-alter function \r\nwith (docstring = 'Searches network logs for IOCs', folder='FlowLogs')\r\nADXFlowmasterleads()  {\r\n    let ThreatIPs = ThreatIntelligenceIndicator\r\n| where isnotempty(NetworkSourceIP) // Filter out null NetworkSourceIPs\r\n| project NetworkSourceIP;\r\nFlowLogFlowEvent\r\n| extend IPMatch = pack_array(SrcIp, DestIp)\r\n| mv-expand IPMatch to typeof(string)\r\n| where isnotempty(IPMatch) // Filter out null IPMatch values\r\n| join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP\r\n| union (\r\n    DeviceNetworkEvents\r\n    | extend IPMatch = pack_array(RemoteIP)\r\n    | mv-expand IPMatch to typeof(string)\r\n    | where isnotempty(IPMatch) // Filter out null IPMatch values in DeviceNetworkEvents\r\n    | join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP\r\n)\r\n}\r\n"
+            "$fxv#0": "// Database Tables\n////////////////////////////////////////////////////////////\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['FlowLogFlowEventraw'] (data : dynamic)\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['FlowLogFlowEvent'] (TimeGenerated: datetime, SrcIp: string, DestIp: string, DestPort: int, TrafficDirection: string, BytesDestToSrc: int, BytesSrcToDest: int)\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['MicrosoftGraphActivityLogs']  (['time']:datetime, ['resourceId']:string, ['operationName']:string, ['operationVersion']:string, ['category']:string, ['resultSignature']:long, ['durationMs']:long, ['callerIpAddress']:string, ['correlationId']:guid, ['level']:string, ['location']:string, ['properties']:dynamic, ['tenantId']:guid)\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['ThreatIntelligenceIndicator']  (['Action']:string, ['Active']:bool, ['AzureTenantId']:guid, ['ConfidenceScore']:int, ['Description']:string, ['ExpirationDateTime']:datetime, ['ExternalIndicatorId']:string, ['IndicatorId']:string, ['NetworkSourceIP']:string, ['SourceSystem']:string, ['Tags']:dynamic, ['TenantId']:guid, ['ThreatType']:string, ['TimeGenerated']:datetime, ['TrafficLightProtocolLevel']:string, ['Type']:string, ['_ItemId']:guid, ['_Internal_WorkspaceResourceId']:string)\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['DeviceNetworkEvents']  (ActionType:string, AdditionalFields:string, DeviceId:string, DeviceName:string, InitiatingProcessAccountDomain:string, InitiatingProcessAccountName:string, InitiatingProcessAccountObjectId:string, InitiatingProcessAccountSid:string, InitiatingProcessAccountUpn:string, InitiatingProcessCommandLine:string, InitiatingProcessFileName:string, InitiatingProcessFolderPath:string, InitiatingProcessId:int, InitiatingProcessIntegrityLevel:string, InitiatingProcessMD5:string, InitiatingProcessParentFileName:string, InitiatingProcessParentId:int, InitiatingProcessSHA1:string, InitiatingProcessSHA256:string, InitiatingProcessTokenElevation:string, InitiatingProcessFileSize:int, InitiatingProcessVersionInfoCompanyName:string, InitiatingProcessVersionInfoProductName:string, InitiatingProcessVersionInfoProductVersion:string, InitiatingProcessVersionInfoInternalFileName:string, InitiatingProcessVersionInfoOriginalFileName:string, InitiatingProcessVersionInfoFileDescription:string, LocalIP:string, LocalIPType:string, LocalPort:int, MachineGroup:string, Protocol:string, RemoteIP:string, RemoteIPType:string, RemotePort:int, RemoteUrl:string, ReportId:string, Timestamp:datetime, InitiatingProcessParentCreationTime:datetime, InitiatingProcessCreationTime:datetime)\n\n// Create table command\n////////////////////////////////////////////////////////////\n.create table ['UnifiedAuditLograw']  (['RecordType']:string, ['CreationDate']:datetime, ['UserIds']:string, ['Operations']:string, ['AuditData']:dynamic, ['ResultIndex']:int, ['ResultCount']:int, ['Identity']:guid, ['IsValid']:bool, ['ObjectState']:string)\n\n//Create table command\n////////////////////////////////////////////////////////////\n.create table ['UnifiedAuditLog']  (['RecordType']:string, ['CreationDate']:string, ['UserIds']:string, ['Operations']:string, ['ResultIndex']:int, ['ResultCount']:int, ['Identity']:guid, ['IsValid']:bool, ['ObjectState']:string, ['AuditData_CreationTime']:string, ['AuditData_Id']:string, ['AuditData_Operation']:string, ['AuditData_OrganizationId']:string, ['AuditData_RecordType']:string, ['AuditData_ResultStatus']:string, ['AuditData_UserKey']:string, ['AuditData_UserType']:string, ['AuditData_Version']:string, ['AuditData_Workload']:string, ['AuditData_UserId']:string, ['AuditData_AppId']:string, ['AuditData_ClientAppId']:string, ['AuditData_ClientIPAddress']:string, ['AuditData_ClientInfoString']:string, ['AuditData_ExternalAccess']:bool, ['AuditData_InternalLogonType']:int, ['AuditData_LogonType']:int, ['AuditData_LogonUserSid']:string, ['AuditData_MailboxGuid']:string, ['AuditData_MailboxOwnerSid']:string, ['AuditData_MailboxOwnerUPN']:string, ['AuditData_OrganizationName']:string, ['AuditData_OriginatingServer']:string)\n\n// Saved KQL Functions\n////////////////////////////////////////////////////////////\n\n// Create function command\n////////////////////////////////////////////////////////////\n.create-or-alter function \nwith (docstring = 'Transforms raw flow log data into FlowLogFlowEvent format', folder='FlowLogs')\nFlowLogTransform()  {\n    FlowLogFlowEventraw\n    | extend recordsArray = todynamic(data.records)\n    | mv-expand record = recordsArray\n    | mv-expand flowRecord = record.flowRecords.flows\n    | mv-expand flowGroup = flowRecord.flowGroups\n    | mv-expand flowTuple = flowGroup.flowTuples\n    | extend tupleParts = split(flowTuple, \",\")\n    | extend TimeGenerated = datetime_add('millisecond', tolong(tupleParts[0]), datetime(1970-01-01)),\n          SrcIp = tostring(tupleParts[1]),\n          DestIp = tostring(tupleParts[2]),\n          DestPort = toint(tupleParts[4]),\n          TrafficDirection = tostring(tupleParts[6]),\n          BytesSrcToDest = toint(tupleParts[10]),\n          BytesDestToSrc = toint(tupleParts[12])\n    | where isnotempty(SrcIp) and isnotempty(DestIp) and isnotnull(DestPort) // Filter out null records\n    | project TimeGenerated, SrcIp, DestIp, DestPort, TrafficDirection, BytesDestToSrc, BytesSrcToDest\n}\n\n// Create function command\n////////////////////////////////////////////////////////////\n.create-or-alter function \nwith (docstring = 'Transforms raw log data into UnifiedAuditLog format', folder='UAL')\nUnifiedAuditLogTransform()  {\n    UnifiedAuditLograw\n    | extend AuditData = parse_json(AuditData)\n    | project \n        RecordType,\n        CreationDate = tostring(CreationDate),\n        UserIds,\n        Operations,\n        ResultIndex,\n        ResultCount,\n        Identity,\n        IsValid,\n        ObjectState,\n        AuditData_CreationTime = tostring(AuditData.CreationTime),\n        AuditData_Id = tostring(AuditData.Id),\n        AuditData_Operation = tostring(AuditData.Operation),\n        AuditData_OrganizationId = tostring(AuditData.OrganizationId),\n        AuditData_RecordType = tostring(AuditData.RecordType),\n        AuditData_ResultStatus = tostring(AuditData.ResultStatus),\n        AuditData_UserKey = tostring(AuditData.UserKey),\n        AuditData_UserType = tostring(AuditData.UserType),\n        AuditData_Version = tostring(AuditData.Version),\n        AuditData_Workload = tostring(AuditData.Workload),\n        AuditData_UserId = tostring(AuditData.UserId),\n        AuditData_AppId = tostring(AuditData.AppId),\n        AuditData_ClientAppId = tostring(AuditData.ClientAppId),\n        AuditData_ClientIPAddress = tostring(AuditData.ClientIPAddress),\n        AuditData_ClientInfoString = tostring(AuditData.ClientInfoString),\n        AuditData_ExternalAccess = tobool(AuditData.ExternalAccess),\n        AuditData_InternalLogonType = toint(AuditData.InternalLogonType),\n        AuditData_LogonType = toint(AuditData.LogonType),\n        AuditData_LogonUserSid = tostring(AuditData.LogonUserSid),\n        AuditData_MailboxGuid = tostring(AuditData.MailboxGuid),\n        AuditData_MailboxOwnerSid = tostring(AuditData.MailboxOwnerSid),\n        AuditData_MailboxOwnerUPN = tostring(AuditData.MailboxOwnerUPN),\n        AuditData_OrganizationName = tostring(AuditData.OrganizationName),\n        AuditData_OriginatingServer = tostring(AuditData.OriginatingServer)\n}\n\n// Create function command\n////////////////////////////////////////////////////////////\n.create-or-alter function \nwith (docstring = 'Searches network logs for Sentinel IOCs', folder='FlowLogs')\nADXFlowmasterleads()  {\n    let ThreatIPs = ThreatIntelligenceIndicator\n| where isnotempty(NetworkSourceIP) // Filter out null NetworkSourceIPs\n| project NetworkSourceIP;\nFlowLogFlowEvent\n| extend IPMatch = pack_array(SrcIp, DestIp)\n| mv-expand IPMatch to typeof(string)\n| where isnotempty(IPMatch) // Filter out null IPMatch values\n| join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP\n| union (\n    DeviceNetworkEvents\n    | extend IPMatch = pack_array(RemoteIP)\n    | mv-expand IPMatch to typeof(string)\n    | where isnotempty(IPMatch) // Filter out null IPMatch values in DeviceNetworkEvents\n    | join kind=inner ThreatIPs on $left.IPMatch == $right.NetworkSourceIP\n)\n}\n\n// Create function command\n////////////////////////////////////////////////////////////\n.create-or-alter function \nwith (docstring = 'Searches network logs for opensource IOCs', folder='FlowLogs')\nADXFlowmasterleadsOS()  {\n    let BlockList = (externaldata(ip:string)\n[@\"https://rules.emergingthreats.net/blockrules/compromised-ips.txt\",\n@\"https://raw.githubusercontent.com/stamparm/ipsum/master/levels/3.txt\",\n@\"https://cinsscore.com/list/ci-badguys.txt\",\n@\"https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt\"\n]\nwith(format=\"csv\")\n| where ip matches regex \"(^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$)\"\n| distinct ip\n);\nDeviceNetworkEvents\n| where RemoteIP  in (BlockList)\n| union (FlowLogFlowEvent| where SrcIp in (BlockList) or  DestIp in (BlockList))\n}\n\n// Mapping commands\n////////////////////////////////////////////////////////////\n\n// Create mapping command\n////////////////////////////////////////////////////////////\n.create table ['FlowLogFlowEventraw'] ingestion json mapping 'FlowLogFlowEventraw_mapping' '[{\"column\":\"data\", \"Properties\":{\"path\":\"$\"}}]'\n\n// Create mapping command\n////////////////////////////////////////////////////////////\n.create table ['UnifiedAuditLograw'] ingestion json mapping 'UnifiedAuditLograw_mapping' '[{\"column\":\"RecordType\", \"Properties\":{\"Path\":\"$[\\'RecordType\\']\"}},{\"column\":\"CreationDate\", \"Properties\":{\"Path\":\"$[\\'CreationDate\\']\"}},{\"column\":\"UserIds\", \"Properties\":{\"Path\":\"$[\\'UserIds\\']\"}},{\"column\":\"Operations\", \"Properties\":{\"Path\":\"$[\\'Operations\\']\"}},{\"column\":\"AuditData\", \"Properties\":{\"Path\":\"$[\\'AuditData\\']\"}},{\"column\":\"ResultIndex\", \"Properties\":{\"Path\":\"$[\\'ResultIndex\\']\"}},{\"column\":\"ResultCount\", \"Properties\":{\"Path\":\"$[\\'ResultCount\\']\"}},{\"column\":\"Identity\", \"Properties\":{\"Path\":\"$[\\'Identity\\']\"}},{\"column\":\"IsValid\", \"Properties\":{\"Path\":\"$[\\'IsValid\\']\"}},{\"column\":\"ObjectState\", \"Properties\":{\"Path\":\"$[\\'ObjectState\\']\"}}]'\n\n// Create mapping command\n////////////////////////////////////////////////////////////\n.create table ['ThreatIntelligenceIndicator'] ingestion json mapping 'ThreatIntelligenceIndicator_mapping' '[{\"column\":\"Action\", \"Properties\":{\"Path\":\"$[\\'Action\\']\"}},{\"column\":\"Active\", \"Properties\":{\"Path\":\"$[\\'Active\\']\"}},{\"column\":\"AzureTenantId\", \"Properties\":{\"Path\":\"$[\\'AzureTenantId\\']\"}},{\"column\":\"ConfidenceScore\", \"Properties\":{\"Path\":\"$[\\'ConfidenceScore\\']\"}},{\"column\":\"Description\", \"Properties\":{\"Path\":\"$[\\'Description\\']\"}},{\"column\":\"ExpirationDateTime\", \"Properties\":{\"Path\":\"$[\\'ExpirationDateTime\\']\"}},{\"column\":\"ExternalIndicatorId\", \"Properties\":{\"Path\":\"$[\\'ExternalIndicatorId\\']\"}},{\"column\":\"IndicatorId\", \"Properties\":{\"Path\":\"$[\\'IndicatorId\\']\"}},{\"column\":\"NetworkSourceIP\", \"Properties\":{\"Path\":\"$[\\'NetworkSourceIP\\']\"}},{\"column\":\"SourceSystem\", \"Properties\":{\"Path\":\"$[\\'SourceSystem\\']\"}},{\"column\":\"Tags\", \"Properties\":{\"Path\":\"$[\\'Tags\\']\"}},{\"column\":\"TenantId\", \"Properties\":{\"Path\":\"$[\\'TenantId\\']\"}},{\"column\":\"ThreatType\", \"Properties\":{\"Path\":\"$[\\'ThreatType\\']\"}},{\"column\":\"TimeGenerated\", \"Properties\":{\"Path\":\"$[\\'TimeGenerated\\']\"}},{\"column\":\"TrafficLightProtocolLevel\", \"Properties\":{\"Path\":\"$[\\'TrafficLightProtocolLevel\\']\"}},{\"column\":\"Type\", \"Properties\":{\"Path\":\"$[\\'Type\\']\"}},{\"column\":\"_ItemId\", \"Properties\":{\"Path\":\"$[\\'_ItemId\\']\"}},{\"column\":\"_Internal_WorkspaceResourceId\", \"Properties\":{\"Path\":\"$[\\'_Internal_WorkspaceResourceId\\']\"}}]'\n\n// Create mapping command\n////////////////////////////////////////////////////////////\n.create table ['DeviceNetworkEvents'] ingestion json mapping 'DeviceNetworkEvents_mapping' '[{\"column\":\"InitiatingProcessAccountObjectId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountObjectId\\']\"}},{\"column\":\"LocalPort\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalPort\\']\"}},{\"column\":\"InitiatingProcessMD5\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessMD5\\']\"}},{\"column\":\"InitiatingProcessAccountUpn\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountUpn\\']\"}},{\"column\":\"AdditionalFields\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'AdditionalFields\\']\"}},{\"column\":\"InitiatingProcessId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessId\\']\"}},{\"column\":\"InitiatingProcessVersionInfoOriginalFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoOriginalFileName\\']\"}},{\"column\":\"LocalIP\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalIP\\']\"}},{\"column\":\"RemotePort\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemotePort\\']\"}},{\"column\":\"InitiatingProcessAccountName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountName\\']\"}},{\"column\":\"InitiatingProcessFolderPath\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFolderPath\\']\"}},{\"column\":\"RemoteUrl\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteUrl\\']\"}},{\"column\":\"InitiatingProcessAccountSid\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountSid\\']\"}},{\"column\":\"RemoteIP\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteIP\\']\"}},{\"column\":\"RemoteIPType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'RemoteIPType\\']\"}},{\"column\":\"InitiatingProcessFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFileName\\']\"}},{\"column\":\"InitiatingProcessVersionInfoInternalFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoInternalFileName\\']\"}},{\"column\":\"ActionType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'ActionType\\']\"}},{\"column\":\"MachineGroup\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'MachineGroup\\']\"}},{\"column\":\"DeviceName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'DeviceName\\']\"}},{\"column\":\"InitiatingProcessFileSize\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessFileSize\\']\"}},{\"column\":\"Timestamp\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'Timestamp\\']\"}},{\"column\":\"ReportId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'ReportId\\']\"}},{\"column\":\"InitiatingProcessIntegrityLevel\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessIntegrityLevel\\']\"}},{\"column\":\"InitiatingProcessAccountDomain\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessAccountDomain\\']\"}},{\"column\":\"InitiatingProcessCreationTime\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessCreationTime\\']\"}},{\"column\":\"DeviceId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'DeviceId\\']\"}},{\"column\":\"InitiatingProcessParentId\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentId\\']\"}},{\"column\":\"InitiatingProcessVersionInfoProductVersion\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoProductVersion\\']\"}},{\"column\":\"InitiatingProcessVersionInfoCompanyName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoCompanyName\\']\"}},{\"column\":\"InitiatingProcessVersionInfoProductName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoProductName\\']\"}},{\"column\":\"InitiatingProcessCommandLine\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessCommandLine\\']\"}},{\"column\":\"InitiatingProcessParentCreationTime\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentCreationTime\\']\"}},{\"column\":\"LocalIPType\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'LocalIPType\\']\"}},{\"column\":\"InitiatingProcessVersionInfoFileDescription\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessVersionInfoFileDescription\\']\"}},{\"column\":\"InitiatingProcessTokenElevation\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessTokenElevation\\']\"}},{\"column\":\"InitiatingProcessSHA256\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessSHA256\\']\"}},{\"column\":\"Protocol\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'Protocol\\']\"}},{\"column\":\"InitiatingProcessParentFileName\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessParentFileName\\']\"}},{\"column\":\"InitiatingProcessSHA1\", \"Properties\":{\"Path\":\"$[\\'properties\\'][\\'InitiatingProcessSHA1\\']\"}}]'\n\n// Create mapping command\n////////////////////////////////////////////////////////////\n.create table ['MicrosoftGraphActivityLogs'] ingestion json mapping 'MicrosoftGraphActivityLogs_mapping' '[{\"column\":\"time\", \"Properties\":{\"Path\":\"$[\\'time\\']\"}},{\"column\":\"resourceId\", \"Properties\":{\"Path\":\"$[\\'resourceId\\']\"}},{\"column\":\"operationName\", \"Properties\":{\"Path\":\"$[\\'operationName\\']\"}},{\"column\":\"operationVersion\", \"Properties\":{\"Path\":\"$[\\'operationVersion\\']\"}},{\"column\":\"category\", \"Properties\":{\"Path\":\"$[\\'category\\']\"}},{\"column\":\"resultSignature\", \"Properties\":{\"Path\":\"$[\\'resultSignature\\']\"}},{\"column\":\"durationMs\", \"Properties\":{\"Path\":\"$[\\'durationMs\\']\"}},{\"column\":\"callerIpAddress\", \"Properties\":{\"Path\":\"$[\\'callerIpAddress\\']\"}},{\"column\":\"correlationId\", \"Properties\":{\"Path\":\"$[\\'correlationId\\']\"}},{\"column\":\"level\", \"Properties\":{\"Path\":\"$[\\'level\\']\"}},{\"column\":\"location\", \"Properties\":{\"Path\":\"$[\\'location\\']\"}},{\"column\":\"properties\", \"Properties\":{\"Path\":\"$[\\'properties\\']\"}},{\"column\":\"tenantId\", \"Properties\":{\"Path\":\"$[\\'tenantId\\']\"}}]'\n\n// Migrate data policy\n////////////////////////////////////////////////////////////\n\n// Create policy update command\n////////////////////////////////////////////////////////////\n.alter table UnifiedAuditLog policy update \n@'[{\"IsEnabled\": true, \"Source\": \"UnifiedAuditLograw\", \"Query\": \"UnifiedAuditLogTransform()\", \"IsTransactional\": false, \"PropagateIngestionProperties\": false}]'\n\n// Create policy update command\n////////////////////////////////////////////////////////////\n.alter table FlowLogFlowEvent policy update \n@'[{\"IsEnabled\": true, \"Source\": \"FlowLogFlowEventraw\", \"Query\": \"FlowLogTransform()\", \"IsTransactional\": false, \"PropagateIngestionProperties\": false}]'\n\n// Table retention policy\n////////////////////////////////////////////////////////////\n\n// Create table retention command\n////////////////////////////////////////////////////////////\n.alter table FlowLogFlowEventraw policy retention\n```\n{\n    \"SoftDeletePeriod\": \"1.00:00:00\",\n    \"Recoverability\": \"Disabled\"\n}\n```\n\n//Create table retention command\n////////////////////////////////////////////////////////////\n.alter table UnifiedAuditLograw policy retention\n```\n{\n    \"SoftDeletePeriod\": \"1.00:00:00\",\n    \"Recoverability\": \"Disabled\"\n}\n```\n",
+            "tenantid": "[subscription().tenantId]"
           },
           "resources": [
             {
@@ -692,9 +885,9 @@
               "name": "[format('adxfm{0}', parameters('environmentid'))]",
               "location": "[parameters('location')]",
               "sku": {
-                "capacity": 2,
-                "name": "Standard_E4ads_v5",
-                "tier": "Standard"
+                "capacity": 1,
+                "name": "Dev(No SLA)_Standard_E2a_v4",
+                "tier": "Basic"
               },
               "identity": {
                 "type": "UserAssigned",
@@ -744,7 +937,7 @@
             {
               "type": "Microsoft.Kusto/clusters/databases",
               "apiVersion": "2023-08-15",
-              "name": "[format('{0}/{1}', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster')]",
+              "name": "[format('{0}/{1}', format('adxfm{0}', parameters('environmentid')), 'logs')]",
               "location": "[parameters('location')]",
               "kind": "ReadWrite",
               "properties": {
@@ -806,7 +999,7 @@
             },
             {
               "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2024-06-01",
               "name": "[format('privatelink.{0}.kusto.windows.net', parameters('location'))]",
               "location": "global",
               "dependsOn": [
@@ -815,7 +1008,7 @@
             },
             {
               "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2024-06-01",
               "name": "[format('{0}/{1}', format('privatelink.{0}.kusto.windows.net', parameters('location')), format('adx-{0}', parameters('environmentid')))]",
               "location": "global",
               "properties": {
@@ -864,6 +1057,7 @@
                 "name": "Standard_LRS"
               },
               "properties": {
+                "isLocalUserEnabled": false,
                 "encryption": {
                   "keySource": "Microsoft.Storage",
                   "requireInfrastructureEncryption": true,
@@ -883,10 +1077,6 @@
                       "keyType": "Service"
                     }
                   }
-                },
-                "networkAcls": {
-                  "bypass": "AzureServices",
-                  "defaultAction": "Allow"
                 },
                 "allowBlobPublicAccess": false,
                 "supportsHttpsTrafficOnly": true,
@@ -922,7 +1112,7 @@
                     },
                     {
                       "enabled": true,
-                      "name": "DeleteAfter24Months",
+                      "name": "DeleteAfter12Months",
                       "type": "Lifecycle",
                       "definition": {
                         "actions": {
@@ -966,11 +1156,22 @@
             },
             {
               "type": "Microsoft.Storage/storageAccounts/blobServices",
-              "apiVersion": "2022-09-01",
+              "apiVersion": "2023-05-01",
               "name": "[format('{0}/{1}', format('stadx{0}', parameters('environmentid')), 'default')]",
               "properties": {},
               "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+              "apiVersion": "2023-05-01",
+              "name": "[format('{0}/{1}/{2}', format('stadx{0}', parameters('environmentid')), 'default', 'ual')]",
+              "properties": {
+                "publicAccess": "None"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', format('stadx{0}', parameters('environmentid')), 'default')]"
               ]
             },
             {
@@ -1018,7 +1219,7 @@
             },
             {
               "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2024-06-01",
               "name": "privatelink.blob.core.windows.net",
               "location": "global"
             },
@@ -1088,19 +1289,19 @@
             {
               "type": "Microsoft.Kusto/clusters/databases/scripts",
               "apiVersion": "2023-08-15",
-              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
               "properties": {
                 "continueOnErrors": false,
                 "scriptContent": "[variables('$fxv#0')]"
               },
               "dependsOn": [
                 "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}.kusto.windows.net', parameters('location')))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster')]"
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]"
               ]
             },
             {
               "type": "Microsoft.EventHub/namespaces",
-              "apiVersion": "2023-01-01-preview",
+              "apiVersion": "2024-05-01-preview",
               "name": "[format('evhns-flowmaster-{0}', parameters('environmentid'))]",
               "location": "[parameters('location')]",
               "sku": {
@@ -1124,7 +1325,7 @@
             },
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
-              "apiVersion": "2023-01-01-preview",
+              "apiVersion": "2024-05-01-preview",
               "name": "[format('{0}/{1}', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-flowlogs-{0}', parameters('environmentid')))]",
               "properties": {
                 "messageRetentionInDays": 1,
@@ -1136,7 +1337,7 @@
             },
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
-              "apiVersion": "2023-01-01-preview",
+              "apiVersion": "2024-05-01-preview",
               "name": "[format('{0}/{1}', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-devicenetwork-{0}', parameters('environmentid')))]",
               "properties": {
                 "messageRetentionInDays": 1,
@@ -1148,8 +1349,32 @@
             },
             {
               "type": "Microsoft.EventHub/namespaces/eventhubs",
-              "apiVersion": "2023-01-01-preview",
+              "apiVersion": "2024-05-01-preview",
               "name": "[format('{0}/{1}', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-cti-{0}', parameters('environmentid')))]",
+              "properties": {
+                "messageRetentionInDays": 1,
+                "partitionCount": 8
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', format('evhns-flowmaster-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.EventHub/namespaces/eventhubs",
+              "apiVersion": "2024-05-01-preview",
+              "name": "[format('{0}/{1}', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-ual-{0}', parameters('environmentid')))]",
+              "properties": {
+                "messageRetentionInDays": 1,
+                "partitionCount": 8
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventHub/namespaces', format('evhns-flowmaster-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.EventHub/namespaces/eventhubs",
+              "apiVersion": "2024-05-01-preview",
+              "name": "[format('{0}/{1}', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-graph-{0}', parameters('environmentid')))]",
               "properties": {
                 "messageRetentionInDays": 1,
                 "partitionCount": 8
@@ -1250,9 +1475,67 @@
               ]
             },
             {
+              "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+              "apiVersion": "2023-12-15-preview",
+              "name": "[format('{0}/{1}', format('egst-flowmaster-{0}', parameters('environmentid')), format('evgs-flowmaster-ual-{0}', parameters('environmentid')))]",
+              "properties": {
+                "deliveryWithResourceIdentity": {
+                  "destination": {
+                    "endpointType": "EventHub",
+                    "properties": {
+                      "resourceId": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-ual-{0}', parameters('environmentid')))]"
+                    }
+                  },
+                  "identity": {
+                    "type": "UserAssigned",
+                    "userAssignedIdentity": "[parameters('umirid')]"
+                  }
+                },
+                "filter": {
+                  "includedEventTypes": [
+                    "Microsoft.Storage.BlobCreated"
+                  ],
+                  "subjectBeginsWith": "/blobServices/default/containers/ual/"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-ual-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.EventGrid/systemTopics/eventSubscriptions",
+              "apiVersion": "2023-12-15-preview",
+              "name": "[format('{0}/{1}', format('egst-flowmaster-{0}', parameters('environmentid')), format('evgs-flowmaster-graph-{0}', parameters('environmentid')))]",
+              "properties": {
+                "deliveryWithResourceIdentity": {
+                  "destination": {
+                    "endpointType": "EventHub",
+                    "properties": {
+                      "resourceId": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-graph-{0}', parameters('environmentid')))]"
+                    }
+                  },
+                  "identity": {
+                    "type": "UserAssigned",
+                    "userAssignedIdentity": "[parameters('umirid')]"
+                  }
+                },
+                "filter": {
+                  "includedEventTypes": [
+                    "Microsoft.Storage.BlobCreated"
+                  ],
+                  "subjectBeginsWith": "/blobServices/default/containers/insights-logs-microsoftgraphactivitylogs/"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-graph-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
               "type": "Microsoft.Kusto/clusters/databases/dataConnections",
               "apiVersion": "2023-08-15",
-              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('adxdc-fw-devicenetwork-{0}', parameters('environmentid')))]",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('adxdc-fw-devicenetwork-{0}', parameters('environmentid')))]",
               "location": "[parameters('location')]",
               "kind": "EventGrid",
               "properties": {
@@ -1269,15 +1552,15 @@
               "dependsOn": [
                 "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
                 "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-devicenetwork-{0}', parameters('environmentid')))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster')]",
-                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]",
+                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]"
               ]
             },
             {
               "type": "Microsoft.Kusto/clusters/databases/dataConnections",
               "apiVersion": "2023-08-15",
-              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('adxdc-fw-cti-{0}', parameters('environmentid')))]",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('adxdc-fw-cti-{0}', parameters('environmentid')))]",
               "location": "[parameters('location')]",
               "kind": "EventGrid",
               "properties": {
@@ -1294,15 +1577,15 @@
               "dependsOn": [
                 "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
                 "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-cti-{0}', parameters('environmentid')))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster')]",
-                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]",
+                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]"
               ]
             },
             {
               "type": "Microsoft.Kusto/clusters/databases/dataConnections",
               "apiVersion": "2023-08-15",
-              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('adxdc-fw-flowlogs-{0}', parameters('environmentid')))]",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('adxdc-fw-flowlogs-{0}', parameters('environmentid')))]",
               "location": "[parameters('location')]",
               "kind": "EventGrid",
               "properties": {
@@ -1319,9 +1602,61 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster')]",
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]",
                 "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-flowlogs-{0}', parameters('environmentid')))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'ADXFlowmaster', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Kusto/clusters/databases/dataConnections",
+              "apiVersion": "2023-08-15",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('adxdc-fw-ual-{0}', parameters('environmentid')))]",
+              "location": "[parameters('location')]",
+              "kind": "EventGrid",
+              "properties": {
+                "blobStorageEventType": "Microsoft.Storage.BlobCreated",
+                "consumerGroup": "$Default",
+                "dataFormat": "JSON",
+                "databaseRouting": "Multi",
+                "managedIdentityResourceId": "[parameters('umirid')]",
+                "eventGridResourceId": "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "eventHubResourceId": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-ual-{0}', parameters('environmentid')))]",
+                "mappingRuleName": "UnifiedAuditLograw_mapping",
+                "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]",
+                "tableName": "UnifiedAuditLograw"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]",
+                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-ual-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Kusto/clusters/databases/dataConnections",
+              "apiVersion": "2023-08-15",
+              "name": "[format('{0}/{1}/{2}', format('adxfm{0}', parameters('environmentid')), 'logs', format('adxdc-fw-graph-{0}', parameters('environmentid')))]",
+              "location": "[parameters('location')]",
+              "kind": "EventGrid",
+              "properties": {
+                "blobStorageEventType": "Microsoft.Storage.BlobCreated",
+                "consumerGroup": "$Default",
+                "dataFormat": "JSON",
+                "databaseRouting": "Multi",
+                "managedIdentityResourceId": "[parameters('umirid')]",
+                "eventGridResourceId": "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "eventHubResourceId": "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-graph-{0}', parameters('environmentid')))]",
+                "mappingRuleName": "MicrosoftGraphActivityLogs_mapping",
+                "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]",
+                "tableName": "MicrosoftGraphActivityLogs"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/systemTopics', format('egst-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Kusto/clusters/databases', format('adxfm{0}', parameters('environmentid')), 'logs')]",
+                "[resourceId('Microsoft.Kusto/clusters/databases/scripts', format('adxfm{0}', parameters('environmentid')), 'logs', format('tablesscript-flowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.EventHub/namespaces/eventhubs', format('evhns-flowmaster-{0}', parameters('environmentid')), format('evh-flowmaster-graph-{0}', parameters('environmentid')))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid')))]"
               ]
             },
@@ -1396,13 +1731,13 @@
             },
             {
               "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2024-06-01",
               "name": "privatelink.servicebus.windows.net",
               "location": "global"
             },
             {
               "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2024-06-01",
               "name": "[format('{0}/{1}', 'privatelink.servicebus.windows.net', format('EventHub-{0}', parameters('environmentid')))]",
               "location": "global",
               "properties": {
@@ -1429,9 +1764,13 @@
               "type": "string",
               "value": "[format('egst-flowmaster-{0}', parameters('environmentid'))]"
             },
-            "adxstcs": {
+            "adxingesturl": {
               "type": "string",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};AccountKey={1}', format('stadx{0}', parameters('environmentid')), listKeys(resourceId('Microsoft.Storage/storageAccounts', format('stadx{0}', parameters('environmentid'))), '2023-01-01').keys[0].value)]"
+              "value": "[reference(resourceId('Microsoft.Kusto/clusters', format('adxfm{0}', parameters('environmentid'))), '2023-08-15').dataIngestionUri]"
+            },
+            "adxstname": {
+              "type": "string",
+              "value": "[format('stadx{0}', parameters('environmentid'))]"
             }
           }
         }
@@ -1441,6 +1780,1047 @@
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umirole-ADXFlowmaster-{0}', parameters('env')))]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('ampls-ADXFlowmaster-{0}', parameters('env'))]",
+      "resourceGroup": "[format('rg-ADXFlowmaster-{0}', parameters('env'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "snetmainid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.mainsubnetresourceid.value]"
+          },
+          "vnetid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.virtualnetworkid.value]"
+          },
+          "amplsid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.amplsscopeid.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "10989860065074637597"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "snetmainid": {
+              "type": "string"
+            },
+            "amplsid": {
+              "type": "string"
+            },
+            "vnetid": {
+              "type": "string"
+            },
+            "zones": {
+              "type": "array",
+              "defaultValue": [
+                "agentsvc.azure-automation.net",
+                "monitor.azure.com",
+                "ods.opinsights.azure.com",
+                "oms.opinsights.azure.com"
+              ]
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "pe-ampls",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('snetmainid')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "psc-ampls",
+                    "properties": {
+                      "privateLinkServiceId": "[parameters('amplsid')]",
+                      "groupIds": [
+                        "azuremonitor"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "privatednszoneforampls",
+                "privatednszonelink"
+              ]
+            },
+            {
+              "copy": {
+                "name": "privatednszoneforampls",
+                "count": "[length(parameters('zones'))]"
+              },
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "[format('privatelink.{0}', parameters('zones')[copyIndex()])]",
+              "location": "global",
+              "properties": {}
+            },
+            {
+              "copy": {
+                "name": "privatednszonelink",
+                "count": "[length(parameters('zones'))]"
+              },
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', format('privatelink.{0}', parameters('zones')[copyIndex()]), format('{0}-link', parameters('zones')[copyIndex()]))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}', parameters('zones')[copyIndex()]))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-06-01",
+              "name": "[format('{0}/{1}', 'pe-ampls', 'pvtendpointdnsgroupforampls')]",
+              "properties": {
+                "copy": [
+                  {
+                    "name": "privateDnsZoneConfigs",
+                    "count": "[length(parameters('zones'))]",
+                    "input": {
+                      "name": "[format('privatelink.{0}', parameters('zones')[copyIndex('privateDnsZoneConfigs')])]",
+                      "properties": {
+                        "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', format('privatelink.{0}', parameters('zones')[copyIndex('privateDnsZoneConfigs')]))]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', 'pe-ampls')]",
+                "privatednszoneforampls"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umirole-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('func-ADXFlowmaster-{0}', parameters('env'))]",
+      "resourceGroup": "[format('rg-ADXFlowmaster-{0}', parameters('env'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "environmentid": {
+            "value": "[variables('environmentid')]"
+          },
+          "larid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.laworkspacerid.value]"
+          },
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "snetmainid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.mainsubnetresourceid.value]"
+          },
+          "umirid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.umirid.value]"
+          },
+          "vnetid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.virtualnetworkid.value]"
+          },
+          "adxingesturl": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('adx-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.adxingesturl.value]"
+          },
+          "snetexid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.funcsubnetid.value]"
+          },
+          "tenantdomain": {
+            "value": "[parameters('tenantdomain')]"
+          },
+          "umicid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.umicid.value]"
+          },
+          "amplsname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.amplsscopename.value]"
+          },
+          "vnetname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.virtualnetworkname.value]"
+          },
+          "adxstname": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('adx-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.adxstname.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "6098389370610004640"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "environmentid": {
+              "type": "string"
+            },
+            "umirid": {
+              "type": "string"
+            },
+            "larid": {
+              "type": "string"
+            },
+            "snetexid": {
+              "type": "string"
+            },
+            "snetmainid": {
+              "type": "string"
+            },
+            "vnetid": {
+              "type": "string"
+            },
+            "vnetname": {
+              "type": "string"
+            },
+            "umicid": {
+              "type": "string"
+            },
+            "adxstname": {
+              "type": "string"
+            },
+            "amplsname": {
+              "type": "string"
+            },
+            "tenantdomain": {
+              "type": "string"
+            },
+            "adxingesturl": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "subscriptionid": "[subscription().subscriptionId]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "privatelink.file.core.windows.net",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "privatelink.queue.core.windows.net",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "privatelink.table.core.windows.net",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2024-06-01",
+              "name": "privatelink.azurewebsites.net",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.blob.core.windows.net', parameters('vnetname'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.file.core.windows.net', parameters('vnetname'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.file.core.windows.net')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.queue.core.windows.net', parameters('vnetname'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.queue.core.windows.net')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.table.core.windows.net', parameters('vnetname'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.table.core.windows.net')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2024-06-01",
+              "name": "[format('{0}/{1}', 'privatelink.azurewebsites.net', parameters('vnetname'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": false,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetid')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.azurewebsites.net')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2023-01-01",
+              "name": "[format('stfunc{0}', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('umirid'))]": {}
+                }
+              },
+              "kind": "StorageV2",
+              "sku": {
+                "name": "Standard_ZRS"
+              },
+              "properties": {
+                "isLocalUserEnabled": false,
+                "encryption": {
+                  "keySource": "Microsoft.Storage",
+                  "requireInfrastructureEncryption": true,
+                  "services": {
+                    "blob": {
+                      "enabled": true
+                    },
+                    "file": {
+                      "enabled": true
+                    },
+                    "queue": {
+                      "enabled": true,
+                      "keyType": "Service"
+                    },
+                    "table": {
+                      "enabled": true,
+                      "keyType": "Service"
+                    }
+                  }
+                },
+                "networkAcls": {
+                  "bypass": "AzureServices",
+                  "defaultAction": "Deny"
+                },
+                "allowBlobPublicAccess": false,
+                "supportsHttpsTrafficOnly": true,
+                "publicNetworkAccess": "Enabled",
+                "minimumTlsVersion": "TLS1_2"
+              }
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('pe-{0}funcst01blob', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('snetmainid')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('psc-{0}funcst01blob', parameters('environmentid'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]",
+                      "groupIds": [
+                        "blob"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}/{1}', format('pe-{0}funcst01blob', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('stfunc{0}', parameters('environmentid'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', format('pe-{0}funcst01blob', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('pe-{0}funcst01file', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('snetmainid')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('psc-func01file-{0}', parameters('environmentid'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]",
+                      "groupIds": [
+                        "file"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}/{1}', format('pe-{0}funcst01file', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('stfunc{0}', parameters('environmentid'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.file.core.windows.net')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.file.core.windows.net')]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('pe-{0}funcst01file', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('pe-{0}funcst01queue', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('snetmainid')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('psc-{0}funcst01queue', parameters('environmentid'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]",
+                      "groupIds": [
+                        "queue"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}/{1}', format('pe-{0}funcst01queue', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('stfunc{0}', parameters('environmentid'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.queue.core.windows.net')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.queue.core.windows.net')]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('pe-{0}funcst01queue', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints",
+              "apiVersion": "2023-04-01",
+              "name": "[format('pe-{0}funcst01table', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('snetmainid')]"
+                },
+                "privateLinkServiceConnections": [
+                  {
+                    "name": "[format('psc-{0}funcst01table', parameters('environmentid'))]",
+                    "properties": {
+                      "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]",
+                      "groupIds": [
+                        "table"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2023-04-01",
+              "name": "[format('{0}/{1}', format('pe-{0}funcst01table', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+              "properties": {
+                "privateDnsZoneConfigs": [
+                  {
+                    "name": "[format('stfunc{0}', parameters('environmentid'))]",
+                    "properties": {
+                      "privateDnsZoneId": "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.table.core.windows.net')]"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.table.core.windows.net')]",
+                "[resourceId('Microsoft.Network/privateEndpoints', format('pe-{0}funcst01table', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[format('appi-ADXFlowmaster-{0}', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[parameters('larid')]",
+                "RetentionInDays": 60,
+                "IngestionMode": "LogAnalytics",
+                "Flow_Type": "Bluefield",
+                "DisableLocalAuth": true,
+                "DisableIpMasking": true,
+                "publicNetworkAccessForIngestion": "Disabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              }
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Insights/components/{0}', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]",
+              "name": "Monitor-Appinsights01",
+              "properties": {
+                "logs": [
+                  {
+                    "categoryGroup": "allLogs",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "allMetrics",
+                    "enabled": true
+                  }
+                ],
+                "workspaceId": "[parameters('larid')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2023-01-01",
+              "name": "[format('asp-ADXFlowmaster-{0}', parameters('environmentid'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "reserved": false,
+                "elasticScaleEnabled": true,
+                "maximumElasticWorkerCount": 20
+              },
+              "sku": {
+                "tier": "ElasticPremium",
+                "name": "EP1"
+              }
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Web/serverfarms/{0}', format('asp-ADXFlowmaster-{0}', parameters('environmentid')))]",
+              "name": "Monitor",
+              "properties": {
+                "metrics": [
+                  {
+                    "category": "allMetrics",
+                    "enabled": true
+                  }
+                ],
+                "workspaceId": "[parameters('larid')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', format('asp-ADXFlowmaster-{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-12-01",
+              "name": "[format('funcADXFlowmaster{0}', parameters('environmentid'))]",
+              "kind": "functionapp",
+              "location": "[parameters('location')]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('umirid'))]": {}
+                }
+              },
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', format('asp-ADXFlowmaster-{0}', parameters('environmentid')))]",
+                "virtualNetworkSubnetId": "[parameters('snetexid')]",
+                "publicNetworkAccess": "Enabled",
+                "httpsOnly": true,
+                "siteConfig": {
+                  "vnetRouteAllEnabled": true,
+                  "autoHealEnabled": true,
+                  "detailedErrorLoggingEnabled": true,
+                  "httpLoggingEnabled": true,
+                  "cors": {
+                    "allowedOrigins": [
+                      "https://portal.azure.com",
+                      "https://preview.portal.azure.com"
+                    ],
+                    "supportCredentials": true
+                  },
+                  "preWarmedInstanceCount": 2,
+                  "remoteDebuggingEnabled": false,
+                  "requestTracingEnabled": true,
+                  "scmMinTlsVersion": "1.2",
+                  "http20Enabled": true,
+                  "functionAppScaleLimit": 10,
+                  "functionsRuntimeScaleMonitoringEnabled": true,
+                  "appSettings": [
+                    {
+                      "name": "FUNCTIONS_EXTENSION_VERSION",
+                      "value": "~4"
+                    },
+                    {
+                      "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                      "value": "[reference(resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid'))), '2020-02-02').ConnectionString]"
+                    },
+                    {
+                      "name": "APPLICATIONINSIGHTS_AUTHENTICATION_STRING",
+                      "value": "[format('Authorization=AAD;ClientId={0}', parameters('umicid'))]"
+                    },
+                    {
+                      "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                      "value": "~3"
+                    },
+                    {
+                      "name": "APPLICATIONINSIGHTS_ENABLE_AGENT",
+                      "value": "true"
+                    },
+                    {
+                      "name": "XDT_MicrosoftApplicationInsights_Mode",
+                      "value": "recommended"
+                    },
+                    {
+                      "name": "FUNCTIONS_WORKER_RUNTIME",
+                      "value": "powershell"
+                    },
+                    {
+                      "name": "DiagnosticServices_EXTENSION_VERSION",
+                      "value": "~3"
+                    },
+                    {
+                      "name": "WEBSITE_CONTENTOVERVNET",
+                      "value": "1"
+                    },
+                    {
+                      "name": "WEBSITE_DNS_SERVER",
+                      "value": "168.63.129.16"
+                    },
+                    {
+                      "name": "WEBSITE_OVERRIDE_STICKY_DIAGNOSTICS_SETTINGS",
+                      "value": "0"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage__accountname",
+                      "value": "[format('stfunc{0}', parameters('environmentid'))]"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage__blobServiceUri",
+                      "value": "[format('https://{0}.blob.core.windows.net/', format('stfunc{0}', parameters('environmentid')))]"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage__queueServiceUri",
+                      "value": "[format('https://{0}.queue.core.windows.net/', format('stfunc{0}', parameters('environmentid')))]"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage__tableServiceUri",
+                      "value": "[format('https://{0}.table.core.windows.net/', format('stfunc{0}', parameters('environmentid')))]"
+                    },
+                    {
+                      "name": "AzureWebJobsStorage__fileServiceUri",
+                      "value": "[format('https://{0}.file.core.windows.net/', format('stfunc{0}', parameters('environmentid')))]"
+                    },
+                    {
+                      "name": "FUNCTIONS_WORKER_PROCESS_COUNT",
+                      "value": "10"
+                    },
+                    {
+                      "name": "ADX_STORAGE_ACCOUNT_NAME",
+                      "value": "[parameters('adxstname')]"
+                    },
+                    {
+                      "name": "AZURE_CLIENT_ID",
+                      "value": "[parameters('umicid')]"
+                    },
+                    {
+                      "name": "AZURE_SUBSCRIPTION_ID",
+                      "value": "[variables('subscriptionid')]"
+                    },
+                    {
+                      "name": "ADX_INGEST_URL",
+                      "value": "[parameters('adxingesturl')]"
+                    },
+                    {
+                      "name": "ADX_URL",
+                      "value": "[parameters('adxingesturl')]"
+                    },
+                    {
+                      "name": "WEBSITE_RUN_FROM_PACKAGE",
+                      "value": "https://github.com/msdirtbag/ADXFlowmaster/blob/main/function.zip?isAsync=true"
+                    },
+                    {
+                      "name": "TENANT_DOMAIN",
+                      "value": "[format('{0}.onmicrosoft.com', parameters('tenantdomain'))]"
+                    },
+                    {
+                      "name": "UALMASTER_OPERATIONS",
+                      "value": "MailItemsAccessed"
+                    },
+                    {
+                      "name": "AzureWebJobs.ualmaster.Disabled",
+                      "value": "1"
+                    },
+                    {
+                      "name": "ADX_URL",
+                      "value": "[parameters('adxingesturl')]"
+                    },
+                    {
+                      "name": "WEBSITE_RUN_FROM_PACKAGE",
+                      "value": "https://bvautomation.blob.core.windows.net/deployment/ual.zip?isAsync=true"
+                    },
+                    {
+                      "name": "TENANT_DOMAIN",
+                      "value": "[format('{0}.onmicrosoft.com', parameters('tenantdomain'))]"
+                    },
+                    {
+                      "name": "UALMASTER_OPERATIONS",
+                      "value": "MailItemsAccessed"
+                    },
+                    {
+                      "name": "AzureWebJobs.ualmaster.Disabled",
+                      "value": "1"
+                    }
+                  ],
+                  "use32BitWorkerProcess": false,
+                  "ftpsState": "Disabled",
+                  "powerShellVersion": "7.4",
+                  "netFrameworkVersion": "v8.0"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Web/serverfarms', format('asp-ADXFlowmaster-{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('pe-{0}funcst01blob', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('pe-{0}funcst01file', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('pe-{0}funcst01queue', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', format('pe-{0}funcst01table', parameters('environmentid')), format('stfunc{0}', parameters('environmentid')))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', format('stfunc{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/diagnosticSettings",
+              "apiVersion": "2021-05-01-preview",
+              "scope": "[format('Microsoft.Web/sites/{0}', format('funcADXFlowmaster{0}', parameters('environmentid')))]",
+              "name": "Monitor",
+              "properties": {
+                "logs": [
+                  {
+                    "category": "FunctionAppLogs",
+                    "enabled": true
+                  }
+                ],
+                "metrics": [
+                  {
+                    "category": "allMetrics",
+                    "enabled": true
+                  }
+                ],
+                "workspaceId": "[parameters('larid')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', format('funcADXFlowmaster{0}', parameters('environmentid')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2022-09-01",
+              "name": "[format('amplslink-ADXFlowmaster-{0}', parameters('environmentid'))]",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "appinsightsid": {
+                    "value": "[resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]"
+                  },
+                  "appinsightsname": {
+                    "value": "[format('appi-ADXFlowmaster-{0}', parameters('environmentid'))]"
+                  },
+                  "amplsname": {
+                    "value": "[parameters('amplsname')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.30.23.60470",
+                      "templateHash": "6491774235151221735"
+                    }
+                  },
+                  "parameters": {
+                    "appinsightsid": {
+                      "type": "string"
+                    },
+                    "appinsightsname": {
+                      "type": "string"
+                    },
+                    "amplsname": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.Insights/privateLinkScopes/scopedResources",
+                      "apiVersion": "2021-07-01-preview",
+                      "name": "[format('{0}/{1}', parameters('amplsname'), parameters('appinsightsname'))]",
+                      "properties": {
+                        "linkedResourceId": "[parameters('appinsightsid')]"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "function01id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites', format('funcADXFlowmaster{0}', parameters('environmentid')))]"
+            },
+            "function01name": {
+              "type": "string",
+              "value": "[format('funcADXFlowmaster{0}', parameters('environmentid'))]"
+            },
+            "appinsights01id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', format('appi-ADXFlowmaster-{0}', parameters('environmentid')))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('adx-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('law-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umirole-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('vnet-ADXFlowmaster-{0}', parameters('env')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('entraumi-ADXFlowmaster-{0}', parameters('env'))]",
+      "resourceGroup": "[format('rg-ADXFlowmaster-{0}', parameters('env'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[variables('location')]"
+          },
+          "uminame": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.uminame.value]"
+          },
+          "umirid": {
+            "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env'))), '2022-09-01').outputs.umirid.value]"
+          },
+          "spnid": {
+            "value": "[parameters('spnid')]"
+          },
+          "spnsecret": {
+            "value": "[parameters('spnsecret')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.30.23.60470",
+              "templateHash": "10936852947965964014"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "umirid": {
+              "type": "string"
+            },
+            "uminame": {
+              "type": "string"
+            },
+            "spnid": {
+              "type": "string"
+            },
+            "spnsecret": {
+              "type": "securestring"
+            }
+          },
+          "variables": {
+            "tenantid": "[tenant().tenantId]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "deployscript-ADXFlowmaster-exchange",
+              "location": "[parameters('location')]",
+              "kind": "AzurePowerShell",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('umirid'))]": {}
+                }
+              },
+              "properties": {
+                "azPowerShellVersion": "12.3.0",
+                "retentionInterval": "P1D",
+                "scriptContent": "      param(\n        [Parameter(Mandatory=$true)]\n        [string]$uminame,\n        [Parameter(Mandatory=$true)]\n        [string]$spnid,\n        [Parameter(Mandatory=$true)]\n        [string]$spnsecret,\n        [Parameter(Mandatory=$true)]\n        [string]$tenantid\n      )\n      Install-Module -Name \"Microsoft.Graph\" -Force\n      $SecuredPassword = ConvertTo-SecureString -String $spnsecret -AsPlainText -Force\n      $ClientSecretCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $spnid, $SecuredPassword\n      Connect-MgGraph -TenantId $tenantid -Credential $ClientSecretCredential -NoWelcome\n      $MIID = (Get-AzADServicePrincipal -DisplayName $uminame).Id\n      $AppRoleID = \"dc50a0fb-09a3-484d-be87-e023b12c6440\"\n      $ResourceID = (Get-MgServicePrincipal -Filter \"AppId eq '00000002-0000-0ff1-ce00-000000000000'\").Id\n      New-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $MIID -PrincipalId $MIID -AppRoleId $AppRoleID -ResourceId $ResourceID\n    ",
+                "arguments": "[format('-uminame {0} -spnid {1} -spnsecret {2} -tenantId {3}', parameters('uminame'), parameters('spnid'), parameters('spnsecret'), variables('tenantid'))]"
+              }
+            },
+            {
+              "type": "Microsoft.Resources/deploymentScripts",
+              "apiVersion": "2023-08-01",
+              "name": "deployscript-ADXFlowmaster-exchangeadmin",
+              "location": "[parameters('location')]",
+              "kind": "AzurePowerShell",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', parameters('umirid'))]": {}
+                }
+              },
+              "properties": {
+                "azPowerShellVersion": "12.3.0",
+                "retentionInterval": "P1D",
+                "scriptContent": "      param(\n        [Parameter(Mandatory=$true)]\n        [string]$uminame,\n        [Parameter(Mandatory=$true)]\n        [string]$spnid,\n        [Parameter(Mandatory=$true)]\n        [string]$spnsecret,\n        [Parameter(Mandatory=$true)]\n        [string]$tenantid\n      )\n      Install-Module -Name \"Microsoft.Graph\" -Force\n      $SecuredPassword = ConvertTo-SecureString -String $spnsecret -AsPlainText -Force\n      $ClientSecretCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $spnid, $SecuredPassword\n      Connect-MgGraph -TenantId $tenantid -Credential $ClientSecretCredential -NoWelcome\n      $RoleID = (Get-MgRoleManagementDirectoryRoleDefinition -Filter \"DisplayName eq 'Exchange Administrator'\").Id\n      $MIID = (Get-AzADServicePrincipal -DisplayName $uminame).Id\n      New-MgRoleManagementDirectoryRoleAssignment -PrincipalId $MIID -RoleDefinitionId $RoleID -DirectoryScopeId \"/\"\n    ",
+                "arguments": "[format('-uminame {0} -spnid {1} -spnsecret {2} -tenantId {3}', parameters('uminame'), parameters('spnid'), parameters('spnsecret'), variables('tenantid'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deploymentScripts', 'deployscript-ADXFlowmaster-exchange')]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('func-ADXFlowmaster-{0}', parameters('env')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-ADXFlowmaster-{0}', parameters('env'))), 'Microsoft.Resources/deployments', format('umi-ADXFlowmaster-{0}', parameters('env')))]"
       ]
     }
   ]
